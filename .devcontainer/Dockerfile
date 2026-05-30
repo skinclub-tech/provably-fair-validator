@@ -1,1 +1,1 @@
-FROM mcr.microsoft.com/devcontainers/php:8.5-trixie
+FROM mcr.microsoft.com/devcontainers/php:8.4-trixie
