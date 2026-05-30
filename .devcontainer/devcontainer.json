@@ -1,0 +1,14 @@
+{
+  "name": "Provably Fair Validator",
+  "build": {
+    "context": ".",
+    "dockerfile": "Dockerfile"
+  },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "PHP Dev Server",
+      "onAutoForward": "openPreview"
+    }
+  }
+}

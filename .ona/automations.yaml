@@ -1,0 +1,7 @@
+services:
+dev-server:
+  name: PHP Dev Server
+  description: Serves index.php on port 8080 using the built-in PHP development server.
+  commands:
+    start: php -S 0.0.0.0:8080 -t /workspaces/provably-fair-validator
+    ready: curl -sf http://localhost:8080
