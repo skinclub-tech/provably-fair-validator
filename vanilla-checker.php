@@ -1,8 +1,10 @@
 <?php
 /*
+For more details on the logic and algorithm please read the guide: https://skin-club.medium.com/provably-fair-1bab9bf10e58
+
 Usage instruction:
 1. Authenticate on Repl.com and Fork this Repl (blue button on top right)
-2. Click "Run" on top of appeared page
+2. Deploy this Repl (green button on top right)
 2. Copy JSON data from the "Check Roll" page on skin.club
 3. Enter the JSON in the form with label "Enter Your Roll Data"
 4. Click the "Check!" button
@@ -190,7 +192,5 @@ if (!empty($_POST['roll_data'])) {
   <div class="footer">
     <a href="https://replit.com/@skinclub/provably-fair-validator" target="_blank">Source Code</a>
   </div>
-
-  <script src="https://replit.com/public/js/replit-badge-v2.js" theme="light" position="bottom-right"></script>
 </body>
 </html>
