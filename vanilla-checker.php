@@ -3,7 +3,7 @@
 For more details on the logic and algorithm please read the guide: https://skin-club.medium.com/provably-fair-1bab9bf10e58
 
 Usage instruction:
-1. Authenticate on Repl.com and Fork this Repl (blue button on top right)
+1. Authenticate on Repl.com and Fork this Repl (button in the page footer)
 2. Deploy this Repl (green button on top right)
 2. Copy JSON data from the "Check Roll" page on skin.club
 3. Enter the JSON in the form with label "Enter Your Roll Data"
