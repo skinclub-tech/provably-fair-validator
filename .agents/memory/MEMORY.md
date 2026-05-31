@@ -1,0 +1,1 @@
+- [Preview port quirk](preview-port.md) — app_preview screenshots hit :5000 but the PHP dev server runs on :8080; validate with curl on 8080.
