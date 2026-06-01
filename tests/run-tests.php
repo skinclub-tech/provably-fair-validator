@@ -184,6 +184,11 @@ check('battle spoiler maps key to client_seed-nonce and message to beacon',
   str_contains($battleOut, 'HMAC-SHA512(key: &quot;' . $battleSteps['message'] . '&quot;, message: ' . $battle['beacon'] . ')'));
 check('battle spoiler omits the public-hash section',
   !str_contains($battleOut, 'public hash'));
+// The battle breakdown highlights the first ROLL_CHARS of the digest via a
+// <span> too, so assert the complete digest appears in its split/highlighted form.
+check('battle spoiler shows the reproducible full HMAC-SHA512 digest (highlighted)',
+  str_contains($battleOut,
+    "<span class='calc-hash-hl'>" . substr($battleSteps['hash'], 0, 15) . "</span>" . substr($battleSteps['hash'], 15)));
 
 echo "Integration: roll type auto-detection\n";
 
