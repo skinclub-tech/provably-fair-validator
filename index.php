@@ -116,18 +116,22 @@ function comparisonCard(string $title, string $original, string $calculated, boo
        . "</div>";
 }
 
+function verifyRollData(string $json): string
+{
+  $input = json_decode($json);
+  if ($input === null) {
+    return callout('error', 'That is not valid JSON.', 'Make sure you copied the entire block, including the curly braces { }.');
+  } elseif (!isset($input->type) || $input->type === 'regular') {
+    return checkRegularRoll($input);
+  } elseif ($input->type === 'battle') {
+    return checkBattleRoll($input);
+  }
+  return callout('error', 'Unknown roll type supplied.', 'The "type" field must be either "regular" or "battle".');
+}
+
 $message = '';
 if (!empty($_POST['roll_data'])) {
-  $input = json_decode($_POST['roll_data']);
-  if ($input === null) {
-    $message = callout('error', 'That is not valid JSON.', 'Make sure you copied the entire block, including the curly braces { }.');
-  } elseif (!isset($input->type) || $input->type === 'regular') {
-    $message = checkRegularRoll($input);
-  } elseif ($input->type === 'battle') {
-    $message = checkBattleRoll($input);
-  } else {
-    $message = callout('error', 'Unknown roll type supplied.', 'The "type" field must be either "regular" or "battle".');
-  }
+  $message = verifyRollData($_POST['roll_data']);
 }
 
 ?>

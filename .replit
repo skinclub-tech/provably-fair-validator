@@ -19,7 +19,7 @@ externalPort = 80
 expertMode = true
 
 [workflows]
-runButton = "Start application"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Start application"
@@ -32,6 +32,26 @@ waitForPort = 8080
 
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test"
+
+[[workflows.workflow]]
+name = "test"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "php tests/run-tests.php"
+
+[workflows.workflow.metadata]
+isValidation = true
 
 [postMerge]
 path = "scripts/post-merge.sh"
