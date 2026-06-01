@@ -342,6 +342,15 @@ if (!empty($_POST['roll_data'])) {
   $message = verifyRollData($_POST['roll_data'], $detectedType);
 }
 
+// Derive the logo's base domain from the current request host by stripping the
+// first subdomain (e.g. roll.cs2.club -> cs2.club). Fall back to skin.club for
+// Replit hosts or anything without a base domain.
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$baseDomain = substr($host, strpos($host, '.') + 1);
+$logoUrl = (substr_count($baseDomain, '.') >= 1 && stripos($baseDomain, 'replit') === false)
+  ? 'https://' . $baseDomain
+  : 'https://skin.club';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -358,7 +367,7 @@ if (!empty($_POST['roll_data'])) {
   <div class="wrap">
 
     <header class="site-header">
-      <a href="https://skin.club" target="_blank" rel="noopener noreferrer">
+      <a href="<?= htmlspecialchars($logoUrl, ENT_QUOTES) ?>" target="_blank" rel="noopener noreferrer">
         <img src="assets/skinclub-mark.svg" alt="SC" width="32" height="32">
       </a>
       <div class="site-header-text">
