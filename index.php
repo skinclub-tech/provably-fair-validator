@@ -465,7 +465,7 @@ if (!empty($_POST['roll_data'])) {
       appearance: none; cursor: pointer; border: none;
       background: #282546;
       clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%);
-      padding: 12px 22px; font-family: inherit; font-size: 12px; font-weight: 500;
+      padding: 11px 22px; font-family: inherit; font-size: 12px; font-weight: 500;
       color: var(--text); transition: filter .15s ease;
     }
     .btn-sample:hover { filter: brightness(1.2); }
@@ -492,7 +492,7 @@ if (!empty($_POST['roll_data'])) {
     .btn:active { transform: translateY(1px); }
     .btn-primary {
       background: #5c49d0; color: #ffffff; box-shadow: none;
-      padding: 11px 60px;
+      padding: 11px 50px; margin-left: auto;
       font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
       clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
     }
