@@ -144,6 +144,43 @@ check('whitespace-only field value is treated as missing',
 check('whitespace field error names the field',
   str_contains($whitespaceFieldOut, 'client_seed'));
 
+echo "Unit: rollSteps intermediates\n";
+
+$steps = rollSteps($regular['server_seed'], $regular['client_seed'], (int)$regular['nonce']);
+check('rollSteps message is "client_seed-nonce"',
+  $steps['message'] === 'my_seed-4');
+check('rollSteps full digest matches hash_hmac(data=server_seed, key=message)',
+  $steps['hash'] === hash_hmac('sha512', $regular['server_seed'], $steps['message']));
+check('rollSteps subHash is the first 15 hex chars of the digest',
+  $steps['subHash'] === substr($steps['hash'], 0, 15) && strlen($steps['subHash']) === 15);
+check('rollSteps decimal is the base-10 value of subHash',
+  $steps['decimal'] === hexdec($steps['subHash']));
+check('rollSteps mod + 1 reproduces the known roll',
+  $steps['mod'] + 1 === 21752 && $steps['roll'] === 21752);
+
+echo "Integration: calculation steps spoiler\n";
+
+check('regular result includes the collapsed calculation spoiler',
+  str_contains($regularOut, "How this roll was calculated")
+  && str_contains($regularOut, "calc-spoiler")
+  && !str_contains($regularOut, "calc-spoiler' open"));
+check('regular spoiler maps key to client_seed-nonce and message to server_seed',
+  str_contains($regularOut, 'key = "client_seed-nonce", message = server_seed'));
+check('regular spoiler public-hash step maps key to secret_salt and message to server_seed',
+  str_contains($regularOut, 'key = secret_salt, message = server_seed'));
+check('regular spoiler shows the reproducible full HMAC-SHA512 digest',
+  str_contains($regularOut, $steps['hash']));
+check('regular spoiler shows the resulting public hash digest',
+  str_contains($regularOut, $regular['public_hash']));
+
+$battleSteps = rollSteps($battle['beacon'], $battle['client_seed'], (int)$battle['nonce']);
+check('battle result includes the calculation spoiler',
+  str_contains($battleOut, "How this roll was calculated") && str_contains($battleOut, "calc-spoiler"));
+check('battle spoiler maps key to client_seed-nonce and message to beacon',
+  str_contains($battleOut, 'key = "client_seed-nonce", message = beacon'));
+check('battle spoiler omits the public-hash section',
+  !str_contains($battleOut, 'public hash'));
+
 echo "Integration: roll type auto-detection\n";
 
 // Battle data (has beacon, no server_seed) pasted without a type field is

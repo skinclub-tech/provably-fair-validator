@@ -24,6 +24,52 @@ function calculatePublicHash(string $secret, string $salt): string
   return hash_hmac('sha256', $secret, $salt);
 }
 
+/**
+ * Re-run the roll calculation but keep every intermediate value, so the UI can
+ * walk the user through the math step by step.
+ */
+function rollSteps(string $seed, string $clientSeed, int $nonce): array
+{
+  $message = "{$clientSeed}-{$nonce}";
+  $hash = hash_hmac('sha512', $seed, $message);
+  $subHash = substr($hash, 0, ROLL_CHARS);
+  $decimal = hexdec($subHash);
+  $mod = $decimal % ROLL_MAX;
+
+  return [
+    'message' => $message,
+    'hash'    => $hash,
+    'subHash' => $subHash,
+    'decimal' => $decimal,
+    'mod'     => $mod,
+    'roll'    => $mod + 1,
+  ];
+}
+
+/**
+ * Render a collapsed <details> spoiler that lists each calculation step.
+ * $steps is an ordered list of [label, value] pairs.
+ */
+function calculationSpoiler(array $steps): string
+{
+  $rows = '';
+  $n = 1;
+  foreach ($steps as [$label, $value]) {
+    $v = htmlspecialchars($value);
+    $rows .= "<div class='calc-step'>"
+           . "<div class='calc-step-num'>{$n}</div>"
+           . "<div class='calc-step-body'><div class='calc-label'>{$label}</div>"
+           . "<div class='calc-value mono'>{$v}</div></div>"
+           . "</div>";
+    $n++;
+  }
+
+  return "<details class='calc-spoiler'>"
+       . "<summary>How this roll was calculated</summary>"
+       . "<div class='calc-steps'>{$rows}</div>"
+       . "</details>";
+}
+
 function missingRequiredProps(object $obj, array $props): array
 {
   $missing = [];
@@ -75,10 +121,22 @@ function checkRegularRoll($data): string
     ? "<div class='summary summary-ok'><span class='summary-icon'>&#10003;</span><div><strong>Verified &mdash; everything checks out.</strong><span>Both the roll and the public hash match.</span></div></div>"
     : "<div class='summary summary-fail'><span class='summary-icon'>&#10007;</span><div><strong>Verification failed.</strong><span>One or more values did not match. See details below.</span></div></div>";
 
+  $s = rollSteps($data->server_seed, $data->client_seed, (int)$data->nonce);
+  $spoiler = calculationSpoiler([
+    ['HMAC-SHA512 inputs &mdash; key = "client_seed-nonce", message = server_seed', "key:     {$s['message']}\nmessage: {$data->server_seed}"],
+    ['Full HMAC-SHA512 digest (128 hex characters)', $s['hash']],
+    ['First ' . ROLL_CHARS . ' hex characters', $s['subHash']],
+    ['Decimal (base-10) value of those characters', (string)$s['decimal']],
+    ['Take mod ' . ROLL_MAX . ', then add 1 &rarr; roll number', "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}"],
+    ['HMAC-SHA256 inputs for public hash &mdash; key = secret_salt, message = server_seed', "key:     {$data->secret_salt}\nmessage: {$data->server_seed}"],
+    ['Resulting public hash digest', $calculatedPublicHash],
+  ]);
+
   return detectedTypeNote('regular')
        . $banner
        . comparisonCard('Roll number', (string)$originalRoll, (string)$calculatedRoll, $rollMatch)
-       . comparisonCard('Public hash', $originalPublicHash, $calculatedPublicHash, $hashMatch, true);
+       . comparisonCard('Public hash', $originalPublicHash, $calculatedPublicHash, $hashMatch, true)
+       . $spoiler;
 }
 
 function checkBattleRoll($data): string
@@ -103,9 +161,19 @@ function checkBattleRoll($data): string
     ? "<div class='summary summary-ok'><span class='summary-icon'>&#10003;</span><div><strong>Verified &mdash; the roll checks out.</strong><span>The recalculated roll matches the one from the battle.</span></div></div>"
     : "<div class='summary summary-fail'><span class='summary-icon'>&#10007;</span><div><strong>Verification failed.</strong><span>The recalculated roll did not match. See details below.</span></div></div>";
 
+  $s = rollSteps($data->beacon, $data->client_seed, (int)$data->nonce);
+  $spoiler = calculationSpoiler([
+    ['HMAC-SHA512 inputs &mdash; key = "client_seed-nonce", message = beacon', "key:     {$s['message']}\nmessage: {$data->beacon}"],
+    ['Full HMAC-SHA512 digest (128 hex characters)', $s['hash']],
+    ['First ' . ROLL_CHARS . ' hex characters', $s['subHash']],
+    ['Decimal (base-10) value of those characters', (string)$s['decimal']],
+    ['Take mod ' . ROLL_MAX . ', then add 1 &rarr; roll number', "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}"],
+  ]);
+
   return detectedTypeNote('battle')
        . $banner
-       . comparisonCard('Roll number', (string)$originalRoll, (string)$calculatedRoll, $rollMatch);
+       . comparisonCard('Roll number', (string)$originalRoll, (string)$calculatedRoll, $rollMatch)
+       . $spoiler;
 }
 
 function detectedTypeNote(string $type): string
@@ -385,6 +453,25 @@ if (!empty($_POST['roll_data'])) {
     .verdict-icon { font-size: 1rem; }
     .verdict-ok { background: var(--ok-bg); color: var(--ok); }
     .verdict-fail { background: var(--fail-bg); color: var(--fail); }
+
+    /* Calculation steps spoiler */
+    .calc-spoiler { margin-top: 4px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); padding: 0 16px; }
+    .calc-spoiler summary { color: var(--brand); }
+    .calc-steps { display: flex; flex-direction: column; gap: 12px; padding: 4px 0 16px; }
+    .calc-step { display: flex; gap: 12px; align-items: flex-start; }
+    .calc-step-num {
+      flex: none; width: 24px; height: 24px; border-radius: 50%;
+      display: grid; place-items: center; margin-top: 1px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #0b1020; font-weight: 800; font-size: .76rem;
+    }
+    .calc-step-body { flex: 1; min-width: 0; }
+    .calc-label { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
+    .calc-value { font-weight: 700; word-break: break-all; }
+    .calc-value.mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 600; font-size: .82rem; white-space: pre-wrap; color: #cdd6ff;
+    }
 
     /* Callouts (errors / warnings) */
     .callout { display: flex; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); }
