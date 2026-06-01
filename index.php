@@ -386,7 +386,7 @@ if (!empty($_POST['roll_data'])) {
     }
     .btn-sample:hover { color: var(--text); text-decoration: underline; }
     textarea {
-      width: 100%; min-height: 190px; resize: vertical;
+      width: 100%; min-height: 240px; resize: vertical;
       background: var(--bg); color: var(--text);
       border: 1px solid var(--border); border-radius: 12px;
       padding: 14px 16px; font-size: .9rem; line-height: 1.5;
