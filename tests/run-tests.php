@@ -91,5 +91,30 @@ $unknown['type'] = 'lottery';
 check('unknown roll type shows error',
   str_contains(verifyRollData(json_encode($unknown)), 'callout-error'));
 
+$regularMissingField = $regular;
+unset($regularMissingField['public_hash']);
+check('regular payload missing a required field shows error',
+  str_contains(verifyRollData(json_encode($regularMissingField)), 'callout-error'));
+
+$regularMissingRoll = $regular;
+unset($regularMissingRoll['roll']);
+check('regular payload missing roll shows error',
+  str_contains(verifyRollData(json_encode($regularMissingRoll)), 'callout-error'));
+
+$battleMissingField = $battle;
+unset($battleMissingField['beacon']);
+check('battle payload missing a required field shows error',
+  str_contains(verifyRollData(json_encode($battleMissingField)), 'callout-error'));
+
+$emptyField = $regular;
+$emptyField['client_seed'] = '';
+check('empty field value is treated as missing',
+  str_contains(verifyRollData(json_encode($emptyField)), 'callout-error'));
+
+$whitespaceField = $regular;
+$whitespaceField['client_seed'] = '   ';
+check('whitespace-only field value is treated as missing',
+  str_contains(verifyRollData(json_encode($whitespaceField)), 'callout-error'));
+
 echo "\n{$passed} passed, {$failed} failed\n";
 exit($failed === 0 ? 0 : 1);

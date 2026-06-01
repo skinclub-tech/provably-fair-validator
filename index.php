@@ -27,7 +27,7 @@ function calculatePublicHash(string $secret, string $salt): string
 function checkRequiredProps(object $obj, array $props): bool
 {
   foreach($props as $prop) {
-    if(!isset($obj->$prop) || $obj->$prop === '') {
+    if(!isset($obj->$prop) || trim((string)$obj->$prop) === '') {
       return false;
     }
   }
