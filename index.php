@@ -403,7 +403,7 @@ if (!empty($_POST['roll_data'])) {
     .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; align-items: center; }
     .btn {
       appearance: none; cursor: pointer; border: 1px solid transparent;
-      padding: 11px 20px; border-radius: 11px; font-size: .92rem; font-weight: 700;
+      padding: 11px 30px; border-radius: 11px; font-size: .92rem; font-weight: 700;
       font-family: inherit;
       transition: transform .08s ease, filter .15s ease, background .15s ease;
     }
@@ -411,7 +411,6 @@ if (!empty($_POST['roll_data'])) {
     .btn-primary {
       background: #5c49d0; color: #ffffff; box-shadow: none;
       font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
-      padding-left: 30px; padding-right: 30px;
       clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
     }
     .btn-primary:hover { filter: brightness(1.08); }
