@@ -658,6 +658,7 @@ if (!empty($_POST['roll_data'])) {
 
         <div class="actions">
           <button type="submit" class="btn btn-primary">Check</button>
+          <button type="button" class="btn btn-ghost" onclick="formatRollData()">Format</button>
         </div>
       </form>
     </section>
@@ -718,6 +719,14 @@ if (!empty($_POST['roll_data'])) {
       ta.value = JSON.stringify(SAMPLES[kind], null, 2);
       autoSize(ta);
       ta.focus();
+    }
+    function formatRollData() {
+      const ta = document.getElementById('roll_data');
+      if (!ta) return;
+      try {
+        ta.value = JSON.stringify(JSON.parse(ta.value), null, 2);
+      } catch (e) {}
+      autoSize(ta);
     }
     document.addEventListener('DOMContentLoaded', () => {
       const ta = document.getElementById('roll_data');
