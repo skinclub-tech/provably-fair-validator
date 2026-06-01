@@ -137,5 +137,31 @@ check('whitespace-only field value is treated as missing',
 check('whitespace field error names the field',
   str_contains($whitespaceFieldOut, 'client_seed'));
 
+echo "Integration: wrong roll type suggestions\n";
+
+// Battle data (has beacon, no server_seed) pasted without a type defaults to the
+// regular checker -- it should suggest this looks like a battle roll.
+$battleAsRegular = $battle;
+unset($battleAsRegular['type']);
+$battleAsRegularOut = verifyRollData(json_encode($battleAsRegular));
+check('battle data in regular checker shows a warning',
+  str_contains($battleAsRegularOut, 'callout-warning'));
+check('battle data in regular checker suggests it is a battle roll',
+  str_contains($battleAsRegularOut, 'battle roll'));
+check('battle data in regular checker does not show generic missing-fields error',
+  !str_contains($battleAsRegularOut, 'callout-error'));
+
+// Regular data (has server_seed, no beacon) forced through the battle checker
+// should suggest this looks like a regular roll.
+$regularAsBattle = $regular;
+$regularAsBattle['type'] = 'battle';
+$regularAsBattleOut = verifyRollData(json_encode($regularAsBattle));
+check('regular data in battle checker shows a warning',
+  str_contains($regularAsBattleOut, 'callout-warning'));
+check('regular data in battle checker suggests it is a regular roll',
+  str_contains($regularAsBattleOut, 'regular roll'));
+check('regular data in battle checker does not show generic missing-fields error',
+  !str_contains($regularAsBattleOut, 'callout-error'));
+
 echo "\n{$passed} passed, {$failed} failed\n";
 exit($failed === 0 ? 0 : 1);

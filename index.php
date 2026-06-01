@@ -43,6 +43,19 @@ function missingFieldsError(array $missing): string
   return callout('error', 'Your input is invalid.', "The following {$label} missing or empty: {$names}. Copy the full JSON string from the site and paste it here.");
 }
 
+function hasProp(object $obj, string $prop): bool
+{
+  return isset($obj->$prop) && trim((string)$obj->$prop) !== '';
+}
+
+function wrongRollTypeError(string $detected): string
+{
+  if ($detected === 'battle') {
+    return callout('warning', 'This looks like a battle roll.', 'The data contains a <code>beacon</code> field but is being checked as a regular roll. Set <code>"type": "battle"</code> in the JSON (or copy the full battle roll data from the site) and check again.');
+  }
+  return callout('warning', 'This looks like a regular roll.', 'The data contains a <code>server_seed</code> field but is being checked as a battle roll. Remove the <code>"type": "battle"</code> field (or copy the full regular roll data from the site) and check again.');
+}
+
 function checkRegularRoll($data): string
 {
   $req = ['server_seed', 'secret_salt', 'public_hash', 'client_seed', 'nonce', 'roll'];
@@ -51,6 +64,9 @@ function checkRegularRoll($data): string
   }
   $missing = missingRequiredProps($data, $req);
   if ($missing) {
+    if (!hasProp($data, 'server_seed') && hasProp($data, 'beacon')) {
+      return wrongRollTypeError('battle');
+    }
     return missingFieldsError($missing);
   }
   if($data->server_seed[0] === '*' || $data->secret_salt[0] === '*') {
@@ -83,6 +99,9 @@ function checkBattleRoll($data): string
   }
   $missing = missingRequiredProps($data, $req);
   if ($missing) {
+    if (!hasProp($data, 'beacon') && hasProp($data, 'server_seed')) {
+      return wrongRollTypeError('regular');
+    }
     return missingFieldsError($missing);
   }
   if($data->beacon[0] === '*') {
