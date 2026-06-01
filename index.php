@@ -308,7 +308,7 @@ if (!empty($_POST['roll_data'])) {
 
     * { box-sizing: border-box; }
 
-    html { font-size: 17px; }
+    html { font-size: 15px; }
 
     body {
       margin: 0;
@@ -357,7 +357,7 @@ if (!empty($_POST['roll_data'])) {
       margin: 0 0 14px;
       font-size: 1.05rem; font-weight: 700;
     }
-    .card p { margin: 0 0 14px; color: var(--muted); }
+    .card p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
 
     details summary {
       cursor: pointer; list-style: none; padding: 10px 0;
@@ -369,7 +369,7 @@ if (!empty($_POST['roll_data'])) {
     details[open] summary::before { transform: rotate(90deg); }
     .card dl { margin: 4px 0 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
     .card dt { font-weight: 700; color: var(--text); font-size: .9rem; }
-    .card dd { margin: 2px 0 0; color: var(--muted); font-size: .88rem; }
+    .card dd { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
     .card code {
       background: var(--panel-2); border: 1px solid var(--border);
       padding: 1px 6px; border-radius: 6px; font-size: .82rem; color: #cdd6ff;
@@ -381,7 +381,7 @@ if (!empty($_POST['roll_data'])) {
     .sample-controls { display: flex; align-items: center; gap: 6px; }
     .btn-sample {
       appearance: none; cursor: pointer; background: none; border: none;
-      padding: 2px 4px; font-family: inherit; font-size: .78rem; font-weight: 500;
+      padding: 2px 4px; font-family: inherit; font-size: 12px; font-weight: 500;
       color: var(--muted); transition: color .15s ease;
     }
     .btn-sample:hover { color: var(--text); text-decoration: underline; }
@@ -408,7 +408,7 @@ if (!empty($_POST['roll_data'])) {
     .btn:active { transform: translateY(1px); }
     .btn-primary {
       background: #5c49d0; color: #ffffff; box-shadow: none;
-      font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+      font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
       padding-left: 30px; padding-right: 30px;
       clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
     }
@@ -416,7 +416,7 @@ if (!empty($_POST['roll_data'])) {
     .btn-ghost { background: var(--panel-2); color: var(--text); border-color: var(--border); }
     .btn-ghost:hover { background: #2c2656; border-color: var(--brand); }
     .spacer { flex: 1; }
-    .sample-label { color: var(--muted); font-size: .82rem; }
+    .sample-label { color: var(--muted); font-size: 14px; }
 
     /* Results */
     .results { animation: fade .25s ease; }
@@ -426,7 +426,7 @@ if (!empty($_POST['roll_data'])) {
       display: inline-block; margin-bottom: 14px;
       padding: 6px 12px; border-radius: 999px;
       background: rgba(123, 79, 255, .12); border: 1px solid var(--border);
-      color: var(--muted); font-size: .85rem;
+      color: var(--muted); font-size: 14px;
     }
     .detected-type strong { color: var(--brand-link); }
 
@@ -436,7 +436,7 @@ if (!empty($_POST['roll_data'])) {
       border: 1px solid var(--border);
     }
     .summary div { display: flex; flex-direction: column; }
-    .summary span:last-child { color: var(--muted); font-size: .9rem; }
+    .summary span:last-child { color: var(--muted); font-size: 14px; }
     .summary-icon { font-size: 1.4rem; width: 40px; height: 40px; flex: none; border-radius: 10px; display: grid; place-items: center; }
     .summary-ok { background: var(--ok-bg); }
     .summary-ok .summary-icon { background: rgba(52,211,153,.18); color: var(--ok); }
@@ -449,7 +449,7 @@ if (!empty($_POST['roll_data'])) {
     .cmp-title { font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 10px; }
     .cmp-row { display: flex; justify-content: space-between; gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--border); }
     .cmp-row:last-of-type { border-bottom: 0; }
-    .cmp-label { color: var(--muted); font-size: .88rem; flex: none; }
+    .cmp-label { color: var(--muted); font-size: 14px; flex: none; }
     .cmp-value { font-weight: 700; text-align: right; word-break: break-all; }
     .cmp-value.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; font-size: .82rem; }
     .verdict { margin-top: 12px; padding: 9px 12px; border-radius: 9px; font-weight: 600; font-size: .9rem; display: flex; align-items: center; gap: 8px; }
@@ -470,7 +470,7 @@ if (!empty($_POST['roll_data'])) {
       color: #ffffff; font-weight: 800; font-size: .76rem;
     }
     .calc-step-body { flex: 1; min-width: 0; }
-    .calc-label { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
+    .calc-label { color: var(--muted); font-size: 14px; margin-bottom: 4px; }
     .calc-value-row { display: flex; gap: 8px; align-items: flex-start; }
     .calc-value { font-weight: 700; word-break: break-all; flex: 1; min-width: 0; }
     .calc-value.mono {
@@ -487,17 +487,31 @@ if (!empty($_POST['roll_data'])) {
     .calc-copy:hover { color: var(--brand-link); border-color: var(--brand); }
     .calc-copy.copied { color: var(--ok, #4ade80); border-color: var(--ok, #4ade80); }
 
+    /* Spoiler text reduction: 1px smaller than the same element outside a details */
+    details summary { font-size: 12.8px; }
+    details .card p { font-size: 13px; }
+    details .card dt { font-size: 12.5px; }
+    details .card dd { font-size: 13px; }
+    details .card code { font-size: 11.3px; }
+    details .cmp-label { font-size: 13px; }
+    details .cmp-value { font-size: 14px; }
+    details .calc-label { font-size: 13px; }
+    details .calc-value { font-size: 14px; }
+    details .calc-value.mono { font-size: 11.3px; }
+    details .calc-step-num { font-size: 10.4px; }
+    details .calc-copy { font-size: 10.4px; }
+
     /* Callouts (errors / warnings) */
     .callout { display: flex; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); }
     .callout-icon { font-size: 1.2rem; flex: none; }
     .callout-text { display: flex; flex-direction: column; gap: 2px; }
-    .callout-text span { color: var(--muted); font-size: .9rem; }
+    .callout-text span { color: var(--muted); font-size: 14px; }
     .callout-error { background: var(--fail-bg); } .callout-error .callout-icon, .callout-error strong { color: var(--fail); }
     .callout-warning { background: var(--warn-bg); } .callout-warning .callout-icon, .callout-warning strong { color: var(--warn); }
     .callout-info { background: var(--info-bg); } .callout-info .callout-icon, .callout-info strong { color: var(--info); }
 
     /* Footer */
-    .footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 26px; }
+    .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 26px; }
     .footer a { color: var(--brand-link); text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
     .footer .footer-links { display: flex; flex-direction: column; align-items: center; gap: 16px; }
