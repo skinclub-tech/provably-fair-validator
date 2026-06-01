@@ -500,7 +500,7 @@ if (!empty($_POST['roll_data'])) {
     .footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 26px; }
     .footer a { color: var(--brand-link); text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
-    .footer .footer-links { display: flex; justify-content: center; gap: 16px; }
+    .footer .footer-links { display: flex; flex-direction: column; align-items: center; gap: 16px; }
 
     @media (max-width: 520px) {
       .site-header h1 { font-size: 1.6rem; }
@@ -573,8 +573,8 @@ if (!empty($_POST['roll_data'])) {
 
     <div class="footer">
       <div class="footer-links">
-        <a href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener">Source Code</a>
         <a href="https://replit.com/@skinclub/provably-fair-validator" target="_blank" rel="noopener"><img src="https://replit.com/badge/github/skinclub-tech/provably-fair-validator" alt="Run on Replit"></a>
+        <a href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener">Source Code</a>
       </div>
     </div>
 
