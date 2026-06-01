@@ -13,7 +13,7 @@
       --panel: #1a1633;
       --panel-2: #221c40;
       --border: #322a5c;
-      --border-soft: #272150;
+      --border-soft: #1c1838;
       --text: #e7eaf6;
       --muted: #a7afd1;
       --brand: #7B4FFF;
@@ -59,7 +59,7 @@
     /* Header */
     .site-header {
       display: flex; align-items: center; flex-wrap: wrap; gap: 32px;
-      margin: 8px 0 34px; padding-bottom: 20px;
+      margin: 8px 0 44px; padding-bottom: 32px;
       border-bottom: 1px solid var(--border-soft);
     }
     .site-header a { display: inline-flex; align-items: center; line-height: 0; }
@@ -255,10 +255,13 @@
     .callout-info { background: var(--info-bg); border-color: rgba(96,165,250,.35); } .callout-info .callout-icon, .callout-info strong { color: var(--info); }
 
     /* Footer */
-    .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 26px; border-top: 1px solid var(--border-soft); padding-top: 20px; }
+    .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 58px; border-top: 1px solid var(--border-soft); padding-top: 32px; }
     .footer a { color: var(--brand-link); text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
+    .footer a:not(.footer-chip):hover { text-decoration: underline; }
     .footer .footer-links { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px; }
+    .footer .footer-links a img { display: block; }
+    .footer .footer-chip { display: inline-flex; align-items: center; height: 36px; box-sizing: border-box; border-radius: 8px; background: #0F1017; border: 1px solid #1A1C25; color: #E8E4FF; font-size: 13px; font-weight: 600; padding: 0 14px; transition: filter .15s ease; }
+    .footer-chip:hover { filter: brightness(1.25); text-decoration: none; }
 
     @media (max-width: 520px) {
       .site-header h1 { font-size: 1.25rem; }
