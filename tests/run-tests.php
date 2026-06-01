@@ -57,17 +57,19 @@ check('calculatePublicHash matches known fixture',
 
 echo "Integration: verifyRollData dispatch\n";
 
-$regularOut = verifyRollData(json_encode($regular));
+$regularType = '';
+$regularOut = verifyRollData(json_encode($regular), $regularType);
 check('valid regular roll verifies',
   str_contains($regularOut, 'summary-ok'));
 check('regular roll result states it was checked as a regular roll',
-  str_contains($regularOut, 'Checked as a') && str_contains($regularOut, 'regular roll'));
+  str_contains($regularType, 'Checked as a') && str_contains($regularType, 'regular roll'));
 
-$battleOut = verifyRollData(json_encode($battle));
+$battleType = '';
+$battleOut = verifyRollData(json_encode($battle), $battleType);
 check('valid battle roll verifies',
   str_contains($battleOut, 'summary-ok'));
 check('battle roll result states it was checked as a battle roll',
-  str_contains($battleOut, 'Checked as a') && str_contains($battleOut, 'battle roll'));
+  str_contains($battleType, 'Checked as a') && str_contains($battleType, 'battle roll'));
 
 $badRoll = $regular;
 $badRoll['roll'] = '12345';

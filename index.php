@@ -119,7 +119,7 @@ function hasProp(object $obj, string $prop): bool
   return isset($obj->$prop) && trim((string)$obj->$prop) !== '';
 }
 
-function checkRegularRoll($data): string
+function checkRegularRoll($data, ?string &$detectedType = null): string
 {
   $req = ['server_seed', 'secret_salt', 'public_hash', 'client_seed', 'nonce', 'roll'];
   if (!is_object($data)) {
@@ -191,14 +191,14 @@ function checkRegularRoll($data): string
     ],
   ]);
 
-  return detectedTypeNote('regular')
-       . $banner
+  $detectedType = detectedTypeNote('regular');
+  return $banner
        . comparisonCard('Roll number', (string)$originalRoll, (string)$calculatedRoll, $rollMatch)
        . comparisonCard('Public hash', $originalPublicHash, $calculatedPublicHash, $hashMatch, true)
        . $spoiler;
 }
 
-function checkBattleRoll($data): string
+function checkBattleRoll($data, ?string &$detectedType = null): string
 {
   $req = ['beacon', 'client_seed', 'nonce', 'roll'];
   if (!is_object($data)) {
@@ -254,8 +254,8 @@ function checkBattleRoll($data): string
     ],
   ]);
 
-  return detectedTypeNote('battle')
-       . $banner
+  $detectedType = detectedTypeNote('battle');
+  return $banner
        . comparisonCard('Roll number', (string)$originalRoll, (string)$calculatedRoll, $rollMatch)
        . $spoiler;
 }
@@ -317,7 +317,7 @@ function detectRollType(object $input): ?string
   return null;
 }
 
-function verifyRollData(string $json): string
+function verifyRollData(string $json, ?string &$detectedType = null): string
 {
   $input = json_decode($json);
   if ($input === null) {
@@ -332,17 +332,18 @@ function verifyRollData(string $json): string
   $type = detectRollType($input) ?? ($input->type ?? 'regular');
 
   if ($type === 'regular') {
-    return checkRegularRoll($input);
+    return checkRegularRoll($input, $detectedType);
   }
   if ($type === 'battle') {
-    return checkBattleRoll($input);
+    return checkBattleRoll($input, $detectedType);
   }
   return callout('error', 'Unknown roll type supplied.', 'The "type" field must be either "regular" or "battle".');
 }
 
 $message = '';
+$detectedType = '';
 if (!empty($_POST['roll_data'])) {
-  $message = verifyRollData($_POST['roll_data']);
+  $message = verifyRollData($_POST['roll_data'], $detectedType);
 }
 
 ?>
@@ -505,8 +506,14 @@ if (!empty($_POST['roll_data'])) {
     .results { animation: fade .25s ease; }
     @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
+    .result-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .result-header h2 { margin: 0; }
+
     .detected-type {
-      display: inline-block; margin-bottom: 14px;
+      display: inline-block;
       padding: 6px 12px; border-radius: 999px;
       background: rgba(123, 79, 255, .12); border: 1px solid var(--border);
       color: var(--muted); font-size: 14px;
@@ -616,7 +623,10 @@ if (!empty($_POST['roll_data'])) {
 
     <?php if ($message): ?>
     <section class="card results" id="results">
-      <h2>Verification result</h2>
+      <div class="result-header">
+        <h2>Verification result</h2>
+        <?php if ($detectedType): ?><?= $detectedType ?><?php endif; ?>
+      </div>
       <?= $message ?>
     </section>
     <?php endif; ?>
