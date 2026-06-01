@@ -48,14 +48,6 @@ function hasProp(object $obj, string $prop): bool
   return isset($obj->$prop) && trim((string)$obj->$prop) !== '';
 }
 
-function wrongRollTypeError(string $detected): string
-{
-  if ($detected === 'battle') {
-    return callout('warning', 'This looks like a battle roll.', 'The data contains a <code>beacon</code> field but is being checked as a regular roll. Set <code>"type": "battle"</code> in the JSON (or copy the full battle roll data from the site) and check again.');
-  }
-  return callout('warning', 'This looks like a regular roll.', 'The data contains a <code>server_seed</code> field but is being checked as a battle roll. Remove the <code>"type": "battle"</code> field (or copy the full regular roll data from the site) and check again.');
-}
-
 function checkRegularRoll($data): string
 {
   $req = ['server_seed', 'secret_salt', 'public_hash', 'client_seed', 'nonce', 'roll'];
@@ -64,9 +56,6 @@ function checkRegularRoll($data): string
   }
   $missing = missingRequiredProps($data, $req);
   if ($missing) {
-    if (!hasProp($data, 'server_seed') && hasProp($data, 'beacon')) {
-      return wrongRollTypeError('battle');
-    }
     return missingFieldsError($missing);
   }
   if($data->server_seed[0] === '*' || $data->secret_salt[0] === '*') {
@@ -99,9 +88,6 @@ function checkBattleRoll($data): string
   }
   $missing = missingRequiredProps($data, $req);
   if ($missing) {
-    if (!hasProp($data, 'beacon') && hasProp($data, 'server_seed')) {
-      return wrongRollTypeError('regular');
-    }
     return missingFieldsError($missing);
   }
   if($data->beacon[0] === '*') {
@@ -151,14 +137,44 @@ function comparisonCard(string $title, string $original, string $calculated, boo
        . "</div>";
 }
 
+/**
+ * Work out which kind of roll the payload is from the fields that are present,
+ * so a missing or wrong "type" field doesn't matter:
+ *   - server_seed (and no beacon) => regular
+ *   - beacon (and no server_seed) => battle
+ * Returns null when the data is ambiguous (both or neither field present).
+ */
+function detectRollType(object $input): ?string
+{
+  $hasServerSeed = hasProp($input, 'server_seed');
+  $hasBeacon = hasProp($input, 'beacon');
+  if ($hasServerSeed && !$hasBeacon) {
+    return 'regular';
+  }
+  if ($hasBeacon && !$hasServerSeed) {
+    return 'battle';
+  }
+  return null;
+}
+
 function verifyRollData(string $json): string
 {
   $input = json_decode($json);
   if ($input === null) {
     return callout('error', 'That is not valid JSON.', 'Make sure you copied the entire block, including the curly braces { }.');
-  } elseif (!isset($input->type) || $input->type === 'regular') {
+  }
+  if (!is_object($input)) {
+    return callout('error', 'Your input is invalid.', 'Copy the full JSON string from the site and paste it here.');
+  }
+
+  // Prefer the type inferred from the actual fields. Only fall back to the
+  // declared "type" field when the payload is ambiguous.
+  $type = detectRollType($input) ?? ($input->type ?? 'regular');
+
+  if ($type === 'regular') {
     return checkRegularRoll($input);
-  } elseif ($input->type === 'battle') {
+  }
+  if ($type === 'battle') {
     return checkBattleRoll($input);
   }
   return callout('error', 'Unknown roll type supplied.', 'The "type" field must be either "regular" or "battle".');

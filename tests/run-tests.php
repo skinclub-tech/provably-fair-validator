@@ -86,9 +86,10 @@ check('ungenerated battle beacon shows warning',
 check('invalid JSON shows error',
   str_contains(verifyRollData('{ not valid json'), 'callout-error'));
 
-$unknown = $regular;
-$unknown['type'] = 'lottery';
-check('unknown roll type shows error',
+// An unknown type only matters when the payload is ambiguous (no seed field to
+// detect from); otherwise the detected type wins (see auto-detection below).
+$unknown = ['type' => 'lottery', 'client_seed' => 'my_seed', 'nonce' => '4', 'roll' => '21752'];
+check('unknown roll type with no seed fields shows error',
   str_contains(verifyRollData(json_encode($unknown)), 'callout-error'));
 
 $regularMissingField = $regular;
@@ -137,31 +138,39 @@ check('whitespace-only field value is treated as missing',
 check('whitespace field error names the field',
   str_contains($whitespaceFieldOut, 'client_seed'));
 
-echo "Integration: wrong roll type suggestions\n";
+echo "Integration: roll type auto-detection\n";
 
-// Battle data (has beacon, no server_seed) pasted without a type defaults to the
-// regular checker -- it should suggest this looks like a battle roll.
-$battleAsRegular = $battle;
-unset($battleAsRegular['type']);
-$battleAsRegularOut = verifyRollData(json_encode($battleAsRegular));
-check('battle data in regular checker shows a warning',
-  str_contains($battleAsRegularOut, 'callout-warning'));
-check('battle data in regular checker suggests it is a battle roll',
-  str_contains($battleAsRegularOut, 'battle roll'));
-check('battle data in regular checker does not show generic missing-fields error',
-  !str_contains($battleAsRegularOut, 'callout-error'));
+// Battle data (has beacon, no server_seed) pasted without a type field is
+// auto-detected as a battle roll and verifies successfully.
+$battleNoType = $battle;
+unset($battleNoType['type']);
+$battleNoTypeOut = verifyRollData(json_encode($battleNoType));
+check('battle data without a type field verifies as battle',
+  str_contains($battleNoTypeOut, 'summary-ok'));
+check('battle data without a type field shows no warning or error',
+  !str_contains($battleNoTypeOut, 'callout-'));
 
-// Regular data (has server_seed, no beacon) forced through the battle checker
-// should suggest this looks like a regular roll.
+// Battle data mislabelled as a regular roll still auto-detects as battle.
+$battleMislabelled = $battle;
+$battleMislabelled['type'] = 'regular';
+check('battle data mislabelled as regular still verifies',
+  str_contains(verifyRollData(json_encode($battleMislabelled)), 'summary-ok'));
+
+// Regular data (has server_seed, no beacon) mislabelled as a battle roll still
+// auto-detects as regular and verifies successfully.
 $regularAsBattle = $regular;
 $regularAsBattle['type'] = 'battle';
 $regularAsBattleOut = verifyRollData(json_encode($regularAsBattle));
-check('regular data in battle checker shows a warning',
-  str_contains($regularAsBattleOut, 'callout-warning'));
-check('regular data in battle checker suggests it is a regular roll',
-  str_contains($regularAsBattleOut, 'regular roll'));
-check('regular data in battle checker does not show generic missing-fields error',
-  !str_contains($regularAsBattleOut, 'callout-error'));
+check('regular data mislabelled as battle still verifies',
+  str_contains($regularAsBattleOut, 'summary-ok'));
+check('regular data mislabelled as battle shows no warning or error',
+  !str_contains($regularAsBattleOut, 'callout-'));
+
+// Regular data with an unknown type still verifies -- fields win over type.
+$regularUnknownType = $regular;
+$regularUnknownType['type'] = 'lottery';
+check('regular data with an unknown type still verifies',
+  str_contains(verifyRollData(json_encode($regularUnknownType)), 'summary-ok'));
 
 echo "\n{$passed} passed, {$failed} failed\n";
 exit($failed === 0 ? 0 : 1);
