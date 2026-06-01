@@ -386,7 +386,7 @@ if (!empty($_POST['roll_data'])) {
       display: flex; align-items: center; gap: 8px;
     }
     details summary::-webkit-details-marker { display: none; }
-    details summary::before { content: "&#9656;"; transition: transform .15s ease; }
+    details summary::before { content: "\25B8"; transition: transform .15s ease; }
     details[open] summary::before { transform: rotate(90deg); }
     .glossary dl { margin: 4px 0 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
     .glossary dt { font-weight: 700; color: var(--text); font-size: .9rem; }
