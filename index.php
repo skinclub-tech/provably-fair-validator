@@ -694,12 +694,13 @@ if (!empty($_POST['roll_data'])) {
   <script>
     const SAMPLES = {
       regular: {
+        client_seed: "my_seed",
         server_seed: "c4ca4238a0b92382",
         secret_salt: "0dcc509a6f75849b",
         public_hash: "dc883b29588c1204fcad00984aaa2404c2251f9a0e5300106eb39aaebcc0f493",
-        client_seed: "my_seed",
         nonce: "4",
-        roll: "21752"
+        roll: "21752",
+        created_at: "2026-04-27 13:23:52"
       },
       battle: {
         type: "battle",
