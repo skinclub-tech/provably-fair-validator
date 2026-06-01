@@ -525,7 +525,7 @@ if (!empty($_POST['roll_data'])) {
 
     <div class="topbar">
       <a href="https://skin.club" target="_blank" rel="noopener noreferrer">
-        <img src="https://skin.club/favicon.ico" alt="skin.club" width="32" height="32">
+        <img src="assets/skinclub-logo.png" alt="skin.club" width="32" height="32">
       </a>
     </div>
 
