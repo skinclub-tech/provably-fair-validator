@@ -171,7 +171,7 @@ check('regular spoiler maps key to client_seed-nonce and message to server_seed'
 check('regular spoiler public-hash step maps key to secret_salt and message to server_seed',
   str_contains($regularOut, 'HMAC-SHA256(key: ' . $regular['secret_salt'] . ', message: ' . $regular['server_seed'] . ')'));
 check('regular spoiler shows the reproducible full HMAC-SHA512 digest',
-  str_contains($regularOut, $steps['hash']));
+  str_contains($regularOut, "<span class='calc-hash-hl'>" . $steps['subHash'] . "</span>" . substr($steps['hash'], 15)));
 check('regular spoiler shows the resulting public hash digest',
   str_contains($regularOut, $regular['public_hash']));
 
