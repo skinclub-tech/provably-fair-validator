@@ -56,10 +56,14 @@ function calculationSpoiler(array $steps): string
   $n = 1;
   foreach ($steps as [$label, $value]) {
     $v = htmlspecialchars($value);
+    $vAttr = htmlspecialchars($value, ENT_QUOTES);
     $rows .= "<div class='calc-step'>"
            . "<div class='calc-step-num'>{$n}</div>"
            . "<div class='calc-step-body'><div class='calc-label'>{$label}</div>"
-           . "<div class='calc-value mono'>{$v}</div></div>"
+           . "<div class='calc-value-row'>"
+           . "<div class='calc-value mono'>{$v}</div>"
+           . "<button type='button' class='calc-copy' data-copy='{$vAttr}' aria-label='Copy value'>Copy</button>"
+           . "</div></div>"
            . "</div>";
     $n++;
   }
@@ -467,11 +471,20 @@ if (!empty($_POST['roll_data'])) {
     }
     .calc-step-body { flex: 1; min-width: 0; }
     .calc-label { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
-    .calc-value { font-weight: 700; word-break: break-all; }
+    .calc-value-row { display: flex; gap: 8px; align-items: flex-start; }
+    .calc-value { font-weight: 700; word-break: break-all; flex: 1; min-width: 0; }
     .calc-value.mono {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-weight: 600; font-size: .82rem; white-space: pre-wrap; color: #cdd6ff;
     }
+    .calc-copy {
+      flex: none; cursor: pointer; border: 1px solid var(--border);
+      background: var(--bg); color: var(--muted); border-radius: 8px;
+      padding: 4px 10px; font-size: .76rem; font-weight: 700;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .calc-copy:hover { color: var(--brand); border-color: var(--brand); }
+    .calc-copy.copied { color: var(--ok, #4ade80); border-color: var(--ok, #4ade80); }
 
     /* Callouts (errors / warnings) */
     .callout { display: flex; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); }
@@ -601,6 +614,37 @@ if (!empty($_POST['roll_data'])) {
       ta.value = JSON.stringify(SAMPLES[kind], null, 2);
       ta.focus();
     }
+
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+      }
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      return ok;
+    }
+
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.calc-copy');
+      if (!btn) return;
+      const ok = await copyText(btn.dataset.copy || '');
+      const original = btn.dataset.label || (btn.dataset.label = btn.textContent);
+      btn.textContent = ok ? 'Copied!' : 'Failed';
+      btn.classList.toggle('copied', ok);
+      clearTimeout(btn._t);
+      btn._t = setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove('copied');
+      }, 1500);
+    });
   </script>
 </body>
 </html>
