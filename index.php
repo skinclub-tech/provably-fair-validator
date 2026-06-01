@@ -648,12 +648,13 @@ if (!empty($_POST['roll_data'])) {
           </div>
         </div>
         <textarea id="roll_data" name="roll_data" placeholder='{
+  "client_seed": "...",
   "server_seed": "...",
   "secret_salt": "...",
   "public_hash": "...",
-  "client_seed": "...",
   "nonce": "...",
-  "roll": "..."
+  "roll": "...",
+  "created_at": "..."
 }'><?= htmlspecialchars($_POST['roll_data'] ?? '') ?></textarea>
 
         <div class="actions">
