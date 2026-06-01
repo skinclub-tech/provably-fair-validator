@@ -724,6 +724,14 @@ if (!empty($_POST['roll_data'])) {
       if (!ta) return;
       autoSize(ta);
       ta.addEventListener('input', () => autoSize(ta));
+      ta.addEventListener('paste', () => {
+        setTimeout(() => {
+          try {
+            ta.value = JSON.stringify(JSON.parse(ta.value), null, 2);
+          } catch (e) {}
+          autoSize(ta);
+        }, 0);
+      });
     });
   </script>
 </body>
