@@ -500,7 +500,7 @@ if (!empty($_POST['roll_data'])) {
     .btn-ghost { background: var(--panel-2); color: var(--text); border-color: var(--border); }
     .btn-ghost:hover { background: #2c2656; border-color: var(--brand); }
     .spacer { flex: 1; }
-    .sample-label { color: var(--muted); font-size: 14px; }
+    .sample-label { color: #6b6a8a; font-size: 12px; font-weight: 700; margin-right: 5px; }
 
     /* Results */
     .results { animation: fade .25s ease; }
@@ -638,7 +638,7 @@ if (!empty($_POST['roll_data'])) {
         <div class="label-row">
           <label class="field-label" for="roll_data">Paste your roll data</label>
           <div class="sample-controls">
-            <span class="sample-label">Try a sample:</span>
+            <span class="sample-label">Sample data:</span>
             <button type="button" class="btn-sample" onclick="loadSample('regular')">Regular</button>
             <button type="button" class="btn-sample" onclick="loadSample('battle')">Battle</button>
           </div>
