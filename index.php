@@ -700,7 +700,7 @@ if (!empty($_POST['roll_data'])) {
         public_hash: "dc883b29588c1204fcad00984aaa2404c2251f9a0e5300106eb39aaebcc0f493",
         nonce: "4",
         roll: "21752",
-        created_at: "2026-04-27 13:23:52"
+        created_at: "2024-01-01 00:00:00"
       },
       battle: {
         type: "battle",
