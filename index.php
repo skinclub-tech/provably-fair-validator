@@ -274,17 +274,26 @@ if (!empty($_POST['roll_data'])) {
   <meta name="theme-color" content="#7B4FFF">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%239B6FFF'/%3E%3Cstop%20offset='1'%20stop-color='%237B4FFF'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%230d0b1a'/%3E%3Cpath%20d='M32%208l18%207v12c0%2011-7.5%2019-18%2023C21.5%2046%2014%2038%2014%2027V15z'%20fill='url(%23g)'/%3E%3Cpath%20d='M26%2032l5%205%209-11'%20fill='none'%20stroke='%230d0b1a'%20stroke-width='4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
   <title>Provably Fair Validator &mdash; Verify your Rolls</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
+      --font: "Montserrat", sans-serif;
       --bg: #0d0b1a;
       --bg-2: #14112a;
       --panel: #1a1633;
       --panel-2: #221c40;
-      --border: #2e2752;
+      --border: #322a5c;
+      --border-soft: #272150;
       --text: #e7eaf6;
-      --muted: #9aa3c7;
+      --muted: #a7afd1;
       --brand: #7B4FFF;
       --brand-2: #9B6FFF;
+      --brand-link: #b29bff;
+      /* Darker gradient stops for surfaces that carry white text (AA-safe) */
+      --brand-grad-1: #6A3DEB;
+      --brand-grad-2: #7548F5;
       --ok: #34d399;
       --ok-bg: rgba(52, 211, 153, .12);
       --fail: #f87171;
@@ -299,15 +308,19 @@ if (!empty($_POST['roll_data'])) {
 
     * { box-sizing: border-box; }
 
+    html { font-size: 17px; }
+
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       color: var(--text);
       line-height: 1.5;
       background:
-        radial-gradient(1100px 600px at 12% -10%, rgba(123, 79, 255, .20), transparent 60%),
-        radial-gradient(900px 500px at 100% 0%, rgba(155, 111, 255, .16), transparent 55%),
+        radial-gradient(1100px 600px at 12% -10%, rgba(123, 79, 255, .26), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(155, 111, 255, .20), transparent 55%),
         var(--bg);
       padding: 32px 18px 64px;
     }
@@ -315,7 +328,7 @@ if (!empty($_POST['roll_data'])) {
     .wrap { max-width: 760px; margin: 0 auto; }
 
     /* Top bar */
-    .topbar { display: flex; justify-content: flex-start; margin-bottom: 18px; }
+    .topbar { display: flex; justify-content: flex-start; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--border-soft); }
     .topbar a { display: inline-flex; align-items: center; line-height: 0; }
     .topbar img {
       height: 32px; width: auto; display: block;
@@ -348,7 +361,7 @@ if (!empty($_POST['roll_data'])) {
 
     details summary {
       cursor: pointer; list-style: none; padding: 10px 0;
-      color: var(--brand); font-weight: 600; font-size: .92rem;
+      color: var(--brand-link); font-weight: 600; font-size: .92rem;
       display: flex; align-items: center; gap: 8px;
     }
     details summary::-webkit-details-marker { display: none; }
@@ -388,10 +401,15 @@ if (!empty($_POST['roll_data'])) {
       transition: transform .08s ease, filter .15s ease, background .15s ease;
     }
     .btn:active { transform: translateY(1px); }
-    .btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #0b1020; }
+    .btn-primary {
+      background: #5c49d0; color: #ffffff; box-shadow: none;
+      font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+      padding-left: 30px; padding-right: 30px;
+      clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
+    }
     .btn-primary:hover { filter: brightness(1.08); }
     .btn-ghost { background: var(--panel-2); color: var(--text); border-color: var(--border); }
-    .btn-ghost:hover { background: #283157; }
+    .btn-ghost:hover { background: #2c2656; border-color: var(--brand); }
     .spacer { flex: 1; }
     .sample-label { color: var(--muted); font-size: .82rem; }
 
@@ -405,7 +423,7 @@ if (!empty($_POST['roll_data'])) {
       background: rgba(123, 79, 255, .12); border: 1px solid var(--border);
       color: var(--muted); font-size: .85rem;
     }
-    .detected-type strong { color: var(--brand); }
+    .detected-type strong { color: var(--brand-link); }
 
     .summary {
       display: flex; align-items: center; gap: 14px;
@@ -436,14 +454,14 @@ if (!empty($_POST['roll_data'])) {
 
     /* Calculation steps spoiler */
     .calc-spoiler { margin-top: 4px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); padding: 0 16px; }
-    .calc-spoiler summary { color: var(--brand); }
+    .calc-spoiler summary { color: var(--brand-link); }
     .calc-steps { display: flex; flex-direction: column; gap: 12px; padding: 4px 0 16px; }
     .calc-step { display: flex; gap: 12px; align-items: flex-start; }
     .calc-step-num {
       flex: none; width: 24px; height: 24px; border-radius: 50%;
       display: grid; place-items: center; margin-top: 1px;
-      background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      color: #0b1020; font-weight: 800; font-size: .76rem;
+      background: linear-gradient(135deg, var(--brand-grad-1), var(--brand-grad-2));
+      color: #ffffff; font-weight: 800; font-size: .76rem;
     }
     .calc-step-body { flex: 1; min-width: 0; }
     .calc-label { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
@@ -459,7 +477,7 @@ if (!empty($_POST['roll_data'])) {
       padding: 4px 10px; font-size: .76rem; font-weight: 700;
       transition: background .15s, color .15s, border-color .15s;
     }
-    .calc-copy:hover { color: var(--brand); border-color: var(--brand); }
+    .calc-copy:hover { color: var(--brand-link); border-color: var(--brand); }
     .calc-copy.copied { color: var(--ok, #4ade80); border-color: var(--ok, #4ade80); }
 
     /* Callouts (errors / warnings) */
@@ -473,7 +491,7 @@ if (!empty($_POST['roll_data'])) {
 
     /* Footer */
     .footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 26px; }
-    .footer a { color: var(--brand); text-decoration: none; }
+    .footer a { color: var(--brand-link); text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
     .footer .footer-links { display: flex; justify-content: center; gap: 16px; }
 
@@ -525,14 +543,14 @@ if (!empty($_POST['roll_data'])) {
 }'><?= htmlspecialchars($_POST['roll_data'] ?? '') ?></textarea>
 
         <div class="actions">
-          <button type="submit" class="btn btn-primary">Check!</button>
+          <button type="submit" class="btn btn-primary">Check</button>
         </div>
       </form>
     </section>
 
     <section class="card">
       <h2>How to verify</h2>
-      <p>Paste the JSON from skin.club&rsquo;s &ldquo;Check Roll&rdquo; page into the box above and hit Check! Here&rsquo;s what each field means:</p>
+      <p>Paste the JSON from skin.club&rsquo;s &ldquo;Check Roll&rdquo; page into the box above and hit Check. Here&rsquo;s what each field means:</p>
       <dl>
         <dt><code>server_seed</code> / <code>beacon</code></dt>
         <dd>The secret value (revealed afterwards) that drives the random roll.</dd>
