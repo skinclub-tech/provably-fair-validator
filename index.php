@@ -465,7 +465,8 @@ if (!empty($_POST['roll_data'])) {
       appearance: none; cursor: pointer; border: none;
       background: #282546;
       clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%);
-      padding: 11px 22px; font-family: inherit; font-size: 12px; font-weight: 500;
+      padding: 10px 20px; font-family: inherit; font-size: 11px; font-weight: 700;
+      text-transform: uppercase;
       color: var(--text); transition: filter .15s ease;
     }
     .btn-sample:hover { filter: brightness(1.2); }
