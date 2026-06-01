@@ -356,10 +356,10 @@ if (!empty($_POST['roll_data'])) {
   <title>Provably Fair Validator &mdash; Verify your Rolls</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=optional" rel="stylesheet">
   <style>
     :root {
-      --font: "Montserrat", sans-serif;
+      --font: "Montserrat", "Helvetica Neue", Arial, sans-serif;
       --bg: #0d0b1a;
       --bg-2: #14112a;
       --panel: #1a1633;
