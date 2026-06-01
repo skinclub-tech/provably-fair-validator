@@ -274,15 +274,15 @@ if (!empty($_POST['roll_data'])) {
   <title>Provably Fair Validator &mdash; Verify your Rolls</title>
   <style>
     :root {
-      --bg: #0f1320;
-      --bg-2: #151a2c;
-      --panel: #1b2138;
-      --panel-2: #212949;
-      --border: #2c3457;
+      --bg: #0d0b1a;
+      --bg-2: #14112a;
+      --panel: #1a1633;
+      --panel-2: #221c40;
+      --border: #2e2752;
       --text: #e7eaf6;
       --muted: #9aa3c7;
-      --brand: #6c8cff;
-      --brand-2: #8a6cff;
+      --brand: #7B4FFF;
+      --brand-2: #9B6FFF;
       --ok: #34d399;
       --ok-bg: rgba(52, 211, 153, .12);
       --fail: #f87171;
@@ -304,8 +304,8 @@ if (!empty($_POST['roll_data'])) {
       color: var(--text);
       line-height: 1.5;
       background:
-        radial-gradient(1100px 600px at 12% -10%, rgba(108, 140, 255, .18), transparent 60%),
-        radial-gradient(900px 500px at 100% 0%, rgba(138, 108, 255, .16), transparent 55%),
+        radial-gradient(1100px 600px at 12% -10%, rgba(123, 79, 255, .20), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(155, 111, 255, .16), transparent 55%),
         var(--bg);
       padding: 32px 18px 64px;
     }
@@ -317,7 +317,7 @@ if (!empty($_POST['roll_data'])) {
     .badge {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 6px 14px; border-radius: 999px;
-      background: rgba(108, 140, 255, .12);
+      background: rgba(123, 79, 255, .12);
       border: 1px solid var(--border);
       color: var(--brand);
       font-size: .78rem; font-weight: 600; letter-spacing: .03em;
@@ -326,7 +326,7 @@ if (!empty($_POST['roll_data'])) {
     .hero h1 {
       margin: 16px 0 8px;
       font-size: 2rem; line-height: 1.15; font-weight: 800;
-      background: linear-gradient(90deg, #fff, #b9c4ff);
+      background: linear-gradient(90deg, #fff, #c4b0ff);
       -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
     .hero p { margin: 0 auto; max-width: 540px; color: var(--muted); font-size: 1rem; }
@@ -348,7 +348,7 @@ if (!empty($_POST['roll_data'])) {
     .card h2 .dot {
       width: 26px; height: 26px; border-radius: 8px; flex: none;
       display: grid; place-items: center;
-      background: rgba(108, 140, 255, .15); color: var(--brand);
+      background: rgba(123, 79, 255, .15); color: var(--brand);
       font-size: .95rem;
     }
 
@@ -402,7 +402,7 @@ if (!empty($_POST['roll_data'])) {
     }
     textarea:focus {
       outline: none; border-color: var(--brand);
-      box-shadow: 0 0 0 4px rgba(108, 140, 255, .18);
+      box-shadow: 0 0 0 4px rgba(123, 79, 255, .18);
     }
 
     .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; align-items: center; }
@@ -426,7 +426,7 @@ if (!empty($_POST['roll_data'])) {
     .detected-type {
       display: inline-block; margin-bottom: 14px;
       padding: 6px 12px; border-radius: 999px;
-      background: rgba(108, 140, 255, .12); border: 1px solid var(--border);
+      background: rgba(123, 79, 255, .12); border: 1px solid var(--border);
       color: var(--muted); font-size: .85rem;
     }
     .detected-type strong { color: var(--brand); }
