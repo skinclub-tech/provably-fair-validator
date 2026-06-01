@@ -388,7 +388,7 @@ if (!empty($_POST['roll_data'])) {
     }
     .btn-sample:hover { filter: brightness(1.2); }
     textarea {
-      width: 100%; min-height: 240px; resize: vertical;
+      width: 100%; min-height: 80px; resize: vertical; overflow-y: hidden;
       background: var(--bg); color: var(--text);
       border: 1px solid var(--border); border-radius: 12px;
       padding: 14px 16px; font-size: .9rem; line-height: 1.5;
@@ -614,11 +614,22 @@ if (!empty($_POST['roll_data'])) {
         roll: "5415"
       }
     };
+    function autoSize(ta) {
+      ta.style.height = 'auto';
+      ta.style.height = ta.scrollHeight + 'px';
+    }
     function loadSample(kind) {
       const ta = document.getElementById('roll_data');
       ta.value = JSON.stringify(SAMPLES[kind], null, 2);
+      autoSize(ta);
       ta.focus();
     }
+    document.addEventListener('DOMContentLoaded', () => {
+      const ta = document.getElementById('roll_data');
+      if (!ta) return;
+      autoSize(ta);
+      ta.addEventListener('input', () => autoSize(ta));
+    });
 
     async function copyText(text) {
       if (navigator.clipboard && window.isSecureContext) {
