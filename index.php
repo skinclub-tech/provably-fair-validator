@@ -324,22 +324,12 @@ if (!empty($_POST['roll_data'])) {
 
     /* Header */
     .hero { text-align: center; margin-bottom: 26px; }
-    .badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 14px; border-radius: 999px;
-      background: rgba(123, 79, 255, .12);
-      border: 1px solid var(--border);
-      color: var(--brand);
-      font-size: .78rem; font-weight: 600; letter-spacing: .03em;
-      text-transform: uppercase;
-    }
     .hero h1 {
       margin: 16px 0 8px;
       font-size: 2rem; line-height: 1.15; font-weight: 800;
       background: linear-gradient(90deg, #fff, #c4b0ff);
       -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .hero p { margin: 0 auto; max-width: 540px; color: var(--muted); font-size: 1rem; }
 
     /* Cards */
     .card {
@@ -353,33 +343,9 @@ if (!empty($_POST['roll_data'])) {
     .card h2 {
       margin: 0 0 14px;
       font-size: 1.05rem; font-weight: 700;
-      display: flex; align-items: center; gap: 9px;
     }
-    .card h2 .dot {
-      width: 26px; height: 26px; border-radius: 8px; flex: none;
-      display: grid; place-items: center;
-      background: rgba(123, 79, 255, .15); color: var(--brand);
-      font-size: .95rem;
-    }
+    .card p { margin: 0 0 14px; color: var(--muted); }
 
-    /* Tips */
-    .tips { list-style: none; margin: 0; padding: 0; counter-reset: step; }
-    .tips li {
-      position: relative; padding: 10px 0 10px 44px;
-      border-bottom: 1px dashed var(--border); color: var(--muted);
-    }
-    .tips li:last-child { border-bottom: 0; padding-bottom: 0; }
-    .tips li strong { color: var(--text); }
-    .tips li::before {
-      counter-increment: step; content: counter(step);
-      position: absolute; left: 0; top: 9px;
-      width: 28px; height: 28px; border-radius: 50%;
-      display: grid; place-items: center;
-      background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      color: #0b1020; font-weight: 800; font-size: .85rem;
-    }
-
-    .glossary { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 6px; }
     details summary {
       cursor: pointer; list-style: none; padding: 10px 0;
       color: var(--brand); font-weight: 600; font-size: .92rem;
@@ -388,10 +354,10 @@ if (!empty($_POST['roll_data'])) {
     details summary::-webkit-details-marker { display: none; }
     details summary::before { content: "\25B8"; transition: transform .15s ease; }
     details[open] summary::before { transform: rotate(90deg); }
-    .glossary dl { margin: 4px 0 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
-    .glossary dt { font-weight: 700; color: var(--text); font-size: .9rem; }
-    .glossary dd { margin: 2px 0 0; color: var(--muted); font-size: .88rem; }
-    .glossary code {
+    .card dl { margin: 4px 0 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .card dt { font-weight: 700; color: var(--text); font-size: .9rem; }
+    .card dd { margin: 2px 0 0; color: var(--muted); font-size: .88rem; }
+    .card code {
       background: var(--panel-2); border: 1px solid var(--border);
       padding: 1px 6px; border-radius: 6px; font-size: .82rem; color: #cdd6ff;
     }
@@ -509,8 +475,6 @@ if (!empty($_POST['roll_data'])) {
     .footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 26px; }
     .footer a { color: var(--brand); text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
-    .footer .run-btn { display: inline-block; margin-bottom: 14px; }
-    .footer .run-btn img { height: 34px; vertical-align: middle; }
     .footer .footer-links { display: flex; justify-content: center; gap: 16px; }
 
     @media (max-width: 520px) {
@@ -530,20 +494,18 @@ if (!empty($_POST['roll_data'])) {
     </div>
 
     <header class="hero">
-      <span class="badge">&#128737; Provably Fair</span>
       <h1>Verify your Rolls</h1>
-      <p>Paste the roll data from skin.club and we&rsquo;ll recalculate the result independently, so you can confirm it was fair.</p>
     </header>
 
     <?php if ($message): ?>
     <section class="card results" id="results">
-      <h2><span class="dot">&#128202;</span> Verification result</h2>
+      <h2>Verification result</h2>
       <?= $message ?>
     </section>
     <?php endif; ?>
 
     <section class="card">
-      <h2><span class="dot">&#9989;</span> Check a roll</h2>
+      <h2>Check a roll</h2>
       <form method="post" action="/">
         <div class="label-row">
           <label class="field-label" for="roll_data">Enter your roll data <span class="hint">&mdash; paste the JSON from the site</span></label>
@@ -569,37 +531,23 @@ if (!empty($_POST['roll_data'])) {
     </section>
 
     <section class="card">
-      <h2><span class="dot">&#128161;</span> How to verify in 4 steps</h2>
-      <ol class="tips">
-        <li>Open the <strong>&ldquo;Check Roll&rdquo;</strong> (Fairness) page on skin.club for the drop you want to verify.</li>
-        <li><strong>Copy the JSON</strong> block shown there &mdash; including the curly braces <code style="color:var(--muted)">{ }</code>.</li>
-        <li><strong>Paste it</strong> into the box below. No need to clean it up.</li>
-        <li>Hit <strong>Check!</strong> and read the result &mdash; green means provably fair.</li>
-      </ol>
-
-      <div class="glossary">
-        <details>
-          <summary>What do these fields mean?</summary>
-          <dl>
-            <dt><code>server_seed</code> / <code>beacon</code></dt>
-            <dd>The secret value (revealed afterwards) that drives the random roll.</dd>
-            <dt><code>client_seed</code></dt>
-            <dd>Your own seed, mixed in so neither side can predict the outcome alone.</dd>
-            <dt><code>nonce</code></dt>
-            <dd>A counter that makes every roll with the same seeds unique.</dd>
-            <dt><code>public_hash</code></dt>
-            <dd>A fingerprint published <em>before</em> the roll, proving the seed wasn&rsquo;t changed later.</dd>
-            <dt><code>roll</code></dt>
-            <dd>The result the site claims &mdash; we recalculate it to confirm.</dd>
-          </dl>
-        </details>
-      </div>
+      <h2>How to verify</h2>
+      <p>Paste the JSON from skin.club&rsquo;s &ldquo;Check Roll&rdquo; page into the box above and hit Check! Here&rsquo;s what each field means:</p>
+      <dl>
+        <dt><code>server_seed</code> / <code>beacon</code></dt>
+        <dd>The secret value (revealed afterwards) that drives the random roll.</dd>
+        <dt><code>client_seed</code></dt>
+        <dd>Your own seed, mixed in so neither side can predict the outcome alone.</dd>
+        <dt><code>nonce</code></dt>
+        <dd>A counter that makes every roll with the same seeds unique.</dd>
+        <dt><code>public_hash</code></dt>
+        <dd>A fingerprint published <em>before</em> the roll, proving the seed wasn&rsquo;t changed later.</dd>
+        <dt><code>roll</code></dt>
+        <dd>The result the site claims &mdash; we recalculate it to confirm.</dd>
+      </dl>
     </section>
 
     <div class="footer">
-      <a class="run-btn" href="https://replit.com/github/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener">
-        <img src="https://replit.com/badge/github/skinclub-tech/provably-fair-validator" alt="Run on Replit">
-      </a>
       <div class="footer-links">
         <a href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener">Source Code</a>
       </div>
