@@ -534,7 +534,7 @@ if (!empty($_POST['roll_data'])) {
     .summary div { display: flex; flex-direction: column; }
     .summary span:last-child { color: var(--muted); font-size: 14px; }
     .summary-icon { font-size: 1.4rem; width: 40px; height: 40px; flex: none; border-radius: 10px; display: grid; place-items: center; }
-    .summary-ok { background: var(--ok-bg); }
+    .summary-ok { background: var(--ok-bg); border-color: rgba(52,211,153,.35); }
     .summary-ok .summary-icon { background: rgba(52,211,153,.18); color: var(--ok); }
     .summary-ok strong { color: var(--ok); }
     .summary-fail { background: var(--fail-bg); }
