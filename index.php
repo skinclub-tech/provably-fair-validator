@@ -329,7 +329,7 @@ if (!empty($_POST['roll_data'])) {
 
     /* Header */
     .site-header {
-      display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
+      display: flex; align-items: center; flex-wrap: wrap; gap: 32px;
       margin: 8px 0 26px; padding-bottom: 16px;
       border-bottom: 1px solid var(--border-soft);
     }
