@@ -12,11 +12,9 @@ if(PHP_INT_SIZE !== 8) {
  */
 function generateRoll(string $serverSeed, string $clientSeed, int $nonce): int
 {
-  $hash = hash_hmac('sha512', $serverSeed, "{$clientSeed}-{$nonce}");
-  $subHash = substr($hash, 0, ROLL_CHARS);
-  $roll = hexdec($subHash) % ROLL_MAX;
+  $steps = rollSteps($serverSeed, $clientSeed, $nonce);
 
-  return $roll + 1;
+  return $steps['roll'];
 }
 
 function calculatePublicHash(string $secret, string $salt): string
