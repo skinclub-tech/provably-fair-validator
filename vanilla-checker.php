@@ -190,7 +190,7 @@ if (!empty($_POST['roll_data'])) {
   </div>
 
   <div class="footer">
-    <a href="https://replit.com/@skinclub/provably-fair-validator" target="_blank">Source Code</a>
+    <a href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank">Source Code</a>
   </div>
 </body>
 </html>
