@@ -187,7 +187,7 @@ function checkRegularRoll($data, ?string &$detectedType = null): string
     [
       'Read the public hash',
       $calculatedPublicHash,
-      'This should match the hash skin.club published before the roll.',
+      'This should match the hash the website published before the roll.',
     ],
   ]);
 
@@ -622,7 +622,7 @@ if (!empty($_POST['roll_data'])) {
 
     <header class="site-header">
       <a href="https://skin.club" target="_blank" rel="noopener noreferrer">
-        <img src="assets/skinclub-mark.svg" alt="skin.club" width="32" height="32">
+        <img src="assets/skinclub-mark.svg" alt="SC" width="32" height="32">
       </a>
       <h1>Verify your Rolls</h1>
     </header>
@@ -664,7 +664,7 @@ if (!empty($_POST['roll_data'])) {
 
     <section class="card">
       <h2>How to verify</h2>
-      <p>Paste the JSON from skin.club&rsquo;s &ldquo;Check Roll&rdquo; page into the box above and hit Check.</p>
+      <p>Paste the JSON from the website&rsquo;s &ldquo;Check Roll&rdquo; page into the box above and hit Check.</p>
       <details class="calc-spoiler field-glossary">
         <summary>Here&rsquo;s what each field means</summary>
         <dl>
