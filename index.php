@@ -455,6 +455,7 @@ if (!empty($_POST['roll_data'])) {
     /* Calculation steps spoiler */
     .calc-spoiler { margin-top: 4px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); padding: 0 16px; }
     .calc-spoiler summary { color: var(--brand-link); }
+    .field-glossary dl { padding: 4px 0 16px; }
     .calc-steps { display: flex; flex-direction: column; gap: 12px; padding: 4px 0 16px; }
     .calc-step { display: flex; gap: 12px; align-items: flex-start; }
     .calc-step-num {
@@ -546,19 +547,22 @@ if (!empty($_POST['roll_data'])) {
 
     <section class="card">
       <h2>How to verify</h2>
-      <p>Paste the JSON from skin.club&rsquo;s &ldquo;Check Roll&rdquo; page into the box above and hit Check. Here&rsquo;s what each field means:</p>
-      <dl>
-        <dt><code>server_seed</code> / <code>beacon</code></dt>
-        <dd>The secret value (revealed afterwards) that drives the random roll.</dd>
-        <dt><code>client_seed</code></dt>
-        <dd>Your own seed, mixed in so neither side can predict the outcome alone.</dd>
-        <dt><code>nonce</code></dt>
-        <dd>A counter that makes every roll with the same seeds unique.</dd>
-        <dt><code>public_hash</code></dt>
-        <dd>A fingerprint published <em>before</em> the roll, proving the seed wasn&rsquo;t changed later.</dd>
-        <dt><code>roll</code></dt>
-        <dd>The result the site claims &mdash; we recalculate it to confirm.</dd>
-      </dl>
+      <p>Paste the JSON from skin.club&rsquo;s &ldquo;Check Roll&rdquo; page into the box above and hit Check.</p>
+      <details class="calc-spoiler field-glossary">
+        <summary>Here&rsquo;s what each field means</summary>
+        <dl>
+          <dt><code>server_seed</code> / <code>beacon</code></dt>
+          <dd>The secret value (revealed afterwards) that drives the random roll.</dd>
+          <dt><code>client_seed</code></dt>
+          <dd>Your own seed, mixed in so neither side can predict the outcome alone.</dd>
+          <dt><code>nonce</code></dt>
+          <dd>A counter that makes every roll with the same seeds unique.</dd>
+          <dt><code>public_hash</code></dt>
+          <dd>A fingerprint published <em>before</em> the roll, proving the seed wasn&rsquo;t changed later.</dd>
+          <dt><code>roll</code></dt>
+          <dd>The result the site claims &mdash; we recalculate it to confirm.</dd>
+        </dl>
+      </details>
     </section>
 
     <div class="footer">
