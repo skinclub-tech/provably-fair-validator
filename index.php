@@ -380,11 +380,13 @@ if (!empty($_POST['roll_data'])) {
     .label-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
     .sample-controls { display: flex; align-items: center; gap: 6px; }
     .btn-sample {
-      appearance: none; cursor: pointer; background: none; border: none;
-      padding: 2px 4px; font-family: inherit; font-size: 12px; font-weight: 500;
-      color: var(--muted); transition: color .15s ease;
+      appearance: none; cursor: pointer; border: none;
+      background: #282546;
+      clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%);
+      padding: 6px 22px; font-family: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); transition: filter .15s ease;
     }
-    .btn-sample:hover { color: var(--text); text-decoration: underline; }
+    .btn-sample:hover { filter: brightness(1.2); }
     textarea {
       width: 100%; min-height: 240px; resize: vertical;
       background: var(--bg); color: var(--text);
