@@ -542,7 +542,7 @@ if (!empty($_POST['roll_data'])) {
     .summary-fail strong { color: var(--fail); }
 
     .cmp-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; background: var(--bg); }
-    .cmp-title { font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 10px; }
+    .cmp-title { font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 10px; }
     .cmp-row { display: flex; justify-content: space-between; gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--border); }
     .cmp-row:last-of-type { border-bottom: 0; }
     .cmp-label { color: var(--muted); font-size: 14px; flex: none; }
