@@ -75,7 +75,8 @@ function checkRegularRoll($data): string
     ? "<div class='summary summary-ok'><span class='summary-icon'>&#10003;</span><div><strong>Verified &mdash; everything checks out.</strong><span>Both the roll and the public hash match.</span></div></div>"
     : "<div class='summary summary-fail'><span class='summary-icon'>&#10007;</span><div><strong>Verification failed.</strong><span>One or more values did not match. See details below.</span></div></div>";
 
-  return $banner
+  return detectedTypeNote('regular')
+       . $banner
        . comparisonCard('Roll number', (string)$originalRoll, (string)$calculatedRoll, $rollMatch)
        . comparisonCard('Public hash', $originalPublicHash, $calculatedPublicHash, $hashMatch, true);
 }
@@ -102,8 +103,15 @@ function checkBattleRoll($data): string
     ? "<div class='summary summary-ok'><span class='summary-icon'>&#10003;</span><div><strong>Verified &mdash; the roll checks out.</strong><span>The recalculated roll matches the one from the battle.</span></div></div>"
     : "<div class='summary summary-fail'><span class='summary-icon'>&#10007;</span><div><strong>Verification failed.</strong><span>The recalculated roll did not match. See details below.</span></div></div>";
 
-  return $banner
+  return detectedTypeNote('battle')
+       . $banner
        . comparisonCard('Roll number', (string)$originalRoll, (string)$calculatedRoll, $rollMatch);
+}
+
+function detectedTypeNote(string $type): string
+{
+  $label = $type === 'battle' ? 'battle roll' : 'regular roll';
+  return "<div class='detected-type'>Checked as a <strong>{$label}</strong></div>";
 }
 
 function callout(string $type, string $title, string $body): string
@@ -342,6 +350,14 @@ if (!empty($_POST['roll_data'])) {
     /* Results */
     .results { animation: fade .25s ease; }
     @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .detected-type {
+      display: inline-block; margin-bottom: 14px;
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(108, 140, 255, .12); border: 1px solid var(--border);
+      color: var(--muted); font-size: .85rem;
+    }
+    .detected-type strong { color: var(--brand); }
 
     .summary {
       display: flex; align-items: center; gap: 14px;
