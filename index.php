@@ -383,8 +383,8 @@ if (!empty($_POST['roll_data'])) {
           <label class="field-label" for="roll_data">Paste your roll data</label>
           <div class="sample-controls">
             <span class="sample-label">Sample data:</span>
-            <button type="button" class="btn-sample" onclick="loadSample('regular')">Regular</button>
-            <button type="button" class="btn-sample" onclick="loadSample('battle')">Battle</button>
+            <span class="btn-focus"><button type="button" class="btn-sample" onclick="loadSample('regular')">Regular</button></span>
+            <span class="btn-focus"><button type="button" class="btn-sample" onclick="loadSample('battle')">Battle</button></span>
           </div>
         </div>
         <textarea id="roll_data" name="roll_data" placeholder='{
@@ -398,7 +398,7 @@ if (!empty($_POST['roll_data'])) {
 }'><?= htmlspecialchars($_POST['roll_data'] ?? '') ?></textarea>
 
         <div class="actions">
-          <button type="submit" class="btn btn-primary">Check</button>
+          <span class="btn-focus btn-focus-end"><button type="submit" class="btn btn-primary">Check</button></span>
         </div>
       </form>
     </section>

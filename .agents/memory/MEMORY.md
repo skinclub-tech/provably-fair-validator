@@ -1,1 +1,2 @@
 - [Preview port quirk](preview-port.md) — app_preview screenshots hit :5000 but the PHP dev server runs on :8080; validate with curl on 8080.
+- [clip-path focus rings](clip-path-focus-rings.md) — clip-path clips outline/box-shadow/drop-shadow focus rings; wrap the button and ring the unclipped wrapper via :has(:focus-visible).

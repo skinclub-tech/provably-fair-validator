@@ -254,6 +254,25 @@
     .callout-warning { background: var(--warn-bg); border-color: rgba(251,191,36,.35); } .callout-warning .callout-icon, .callout-warning strong { color: var(--warn); }
     .callout-info { background: var(--info-bg); border-color: rgba(96,165,250,.35); } .callout-info .callout-icon, .callout-info strong { color: var(--info); }
 
+    /* Keyboard focus — consistent on-brand indicator for every clickable element */
+    a:focus-visible,
+    .btn-ghost:focus-visible,
+    details summary:focus-visible {
+      outline: none;
+      border-radius: 8px;
+      box-shadow: 0 0 0 4px rgba(123, 79, 255, .35);
+    }
+    .btn-ghost:focus-visible { border-color: var(--brand); }
+    /* Hexagonal (clip-path) buttons clip any outline/box-shadow/filter on themselves,
+       so the focus ring is carried by an unclipped wrapper instead. */
+    .btn-focus { display: inline-flex; border-radius: 11px; }
+    .btn-focus-end { margin-left: auto; }
+    .btn-focus:has(:focus-visible) {
+      box-shadow: 0 0 0 4px rgba(123, 79, 255, .35);
+    }
+    .btn-sample:focus-visible,
+    .btn-primary:focus-visible { outline: none; }
+
     /* Footer */
     .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 58px; border-top: 1px solid var(--border-soft); padding-top: 32px; }
     .footer a { color: var(--brand-link); text-decoration: none; }
@@ -262,7 +281,7 @@
     .footer .footer-links a img { display: block; }
     .footer .footer-chip { display: inline-flex; align-items: center; height: 36px; box-sizing: border-box; border-radius: 8px; background: #0F1017; border: 1px solid #1A1C25; color: #E8E4FF; font-size: 13px; font-weight: 600; padding: 0 14px; transition: filter .15s ease; }
     .footer-chip:hover { filter: brightness(1.25); text-decoration: none; }
-    .footer-chip:focus-visible { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px rgba(123, 79, 255, .18); text-decoration: none; }
+    .footer-chip:focus-visible { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px rgba(123, 79, 255, .35); text-decoration: none; }
 
     @media (max-width: 520px) {
       .site-header h1 { font-size: 1.25rem; }
