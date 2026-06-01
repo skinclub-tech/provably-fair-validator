@@ -520,10 +520,9 @@ if (!empty($_POST['roll_data'])) {
     <?php endif; ?>
 
     <section class="card">
-      <h2>Check a roll</h2>
       <form method="post" action="/">
         <div class="label-row">
-          <label class="field-label" for="roll_data">Enter your roll data <span class="hint">&mdash; paste the JSON from the site</span></label>
+          <label class="field-label" for="roll_data">Paste your roll data <span class="hint">&mdash; the JSON from skin.club's Check Roll page</span></label>
           <div class="sample-controls">
             <span class="sample-label">Try a sample:</span>
             <button type="button" class="btn btn-ghost btn-sm" onclick="loadSample('regular')">Regular</button>
