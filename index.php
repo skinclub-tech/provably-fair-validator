@@ -379,8 +379,12 @@ if (!empty($_POST['roll_data'])) {
     .field-label { font-weight: 600; }
     .label-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
     .sample-controls { display: flex; align-items: center; gap: 6px; }
-    .btn-sm { padding: 5px 11px; border-radius: 8px; font-size: .78rem; }
-    .hint { color: var(--muted); font-weight: 400; font-size: .85rem; }
+    .btn-sample {
+      appearance: none; cursor: pointer; background: none; border: none;
+      padding: 2px 4px; font-family: inherit; font-size: .78rem; font-weight: 500;
+      color: var(--muted); transition: color .15s ease;
+    }
+    .btn-sample:hover { color: var(--text); text-decoration: underline; }
     textarea {
       width: 100%; min-height: 190px; resize: vertical;
       background: var(--bg); color: var(--text);
@@ -525,11 +529,11 @@ if (!empty($_POST['roll_data'])) {
     <section class="card">
       <form method="post" action="/">
         <div class="label-row">
-          <label class="field-label" for="roll_data">Paste your roll data <span class="hint">&mdash; the JSON from skin.club's Check Roll page</span></label>
+          <label class="field-label" for="roll_data">Paste your roll data</label>
           <div class="sample-controls">
             <span class="sample-label">Try a sample:</span>
-            <button type="button" class="btn btn-ghost btn-sm" onclick="loadSample('regular')">Regular</button>
-            <button type="button" class="btn btn-ghost btn-sm" onclick="loadSample('battle')">Battle</button>
+            <button type="button" class="btn-sample" onclick="loadSample('regular')">Regular</button>
+            <button type="button" class="btn-sample" onclick="loadSample('battle')">Battle</button>
           </div>
         </div>
         <textarea id="roll_data" name="roll_data" placeholder='{
