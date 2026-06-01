@@ -340,7 +340,7 @@ if (!empty($_POST['roll_data'])) {
     }
     .site-header h1 {
       margin: 0;
-      font-size: 2rem; line-height: 1.15; font-weight: 800;
+      font-size: 1.5rem; line-height: 1.15; font-weight: 800;
       color: #f5f5fa;
     }
 
@@ -518,7 +518,7 @@ if (!empty($_POST['roll_data'])) {
     .footer .footer-links { display: flex; flex-direction: column; align-items: center; gap: 16px; }
 
     @media (max-width: 520px) {
-      .site-header h1 { font-size: 1.6rem; }
+      .site-header h1 { font-size: 1.25rem; }
       .cmp-row { flex-direction: column; gap: 2px; }
       .cmp-value { text-align: left; }
     }
