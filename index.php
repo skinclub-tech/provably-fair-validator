@@ -361,7 +361,10 @@ if (!empty($_POST['roll_data'])) {
       <a href="https://skin.club" target="_blank" rel="noopener noreferrer">
         <img src="assets/skinclub-mark.svg" alt="SC" width="32" height="32">
       </a>
-      <h1>Verify your Rolls</h1>
+      <div class="site-header-text">
+        <h1>Verify your Rolls</h1>
+        <p class="site-subtitle">Open-source provably fair verification</p>
+      </div>
     </header>
 
     <?php if ($message): ?>

@@ -67,10 +67,15 @@
       height: 32px; width: auto; display: block;
       image-rendering: -webkit-optimize-contrast;
     }
+    .site-header-text { display: flex; flex-direction: column; gap: 4px; }
     .site-header h1 {
       margin: 0;
       font-size: 1.5rem; line-height: 1.15; font-weight: 800;
       color: #f5f5fa;
+    }
+    .site-subtitle {
+      margin: 0;
+      color: var(--muted); font-size: 13px; font-weight: 500;
     }
 
     /* Cards */
