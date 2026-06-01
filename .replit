@@ -1,5 +1,5 @@
 language = "php"
-modules = ["php-8.4"]
+modules = ["php-8.4", "python-3.11"]
 
 entrypoint = "index.php"
 run = "php -S 0.0.0.0:8080 -t ."

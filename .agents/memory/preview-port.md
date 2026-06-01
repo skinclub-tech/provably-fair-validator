@@ -15,3 +15,10 @@ of relying on the screenshot tool.
 
 **Note:** Deployment (`.replit [deployment]`) runs on a different port mapping
 (8000 → external 80) — separate from the dev workflow's 8080.
+
+**Validating visuals via `external_url` screenshot:** You can screenshot the
+running app through `$REPLIT_DEV_DOMAIN` (proxies to 8080). But the screenshot
+service caches by URL — repeated captures of the same URL return the identical
+image even after you change files. Append a throwaway query param (e.g.
+`?cb=991`) to force a fresh capture. Renaming an asset file alone is not enough
+to bust this page-level cache.
