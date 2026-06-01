@@ -398,6 +398,7 @@ if (!empty($_POST['roll_data'])) {
     .btn {
       appearance: none; cursor: pointer; border: 1px solid transparent;
       padding: 11px 20px; border-radius: 11px; font-size: .92rem; font-weight: 700;
+      font-family: inherit;
       transition: transform .08s ease, filter .15s ease, background .15s ease;
     }
     .btn:active { transform: translateY(1px); }
@@ -476,6 +477,7 @@ if (!empty($_POST['roll_data'])) {
       flex: none; cursor: pointer; border: 1px solid var(--border);
       background: var(--bg); color: var(--muted); border-radius: 8px;
       padding: 4px 10px; font-size: .76rem; font-weight: 700;
+      font-family: inherit;
       transition: background .15s, color .15s, border-color .15s;
     }
     .calc-copy:hover { color: var(--brand-link); border-color: var(--brand); }
