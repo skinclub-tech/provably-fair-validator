@@ -369,6 +369,9 @@ if (!empty($_POST['roll_data'])) {
     .footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 26px; }
     .footer a { color: var(--brand); text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
+    .footer .run-btn { display: inline-block; margin-bottom: 14px; }
+    .footer .run-btn img { height: 34px; vertical-align: middle; }
+    .footer .footer-links { display: flex; justify-content: center; gap: 16px; }
 
     @media (max-width: 520px) {
       .hero h1 { font-size: 1.6rem; }
@@ -445,7 +448,12 @@ if (!empty($_POST['roll_data'])) {
     </section>
 
     <div class="footer">
-      <a href="https://replit.com/@skinclub/provably-fair-validator" target="_blank" rel="noopener">Source Code</a>
+      <a class="run-btn" href="https://replit.com/github/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener">
+        <img src="https://replit.com/badge/github/skinclub-tech/provably-fair-validator" alt="Run on Replit">
+      </a>
+      <div class="footer-links">
+        <a href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener">Source Code</a>
+      </div>
     </div>
 
   </div>
@@ -474,7 +482,5 @@ if (!empty($_POST['roll_data'])) {
       ta.focus();
     }
   </script>
-
-  <script src="https://replit.com/public/js/replit-badge-v2.js" theme="light" position="bottom-right"></script>
 </body>
 </html>
