@@ -242,9 +242,9 @@
     .callout-icon { font-size: 1.2rem; flex: none; }
     .callout-text { display: flex; flex-direction: column; gap: 2px; }
     .callout-text span { color: var(--muted); font-size: 14px; }
-    .callout-error { background: var(--fail-bg); } .callout-error .callout-icon, .callout-error strong { color: var(--fail); }
-    .callout-warning { background: var(--warn-bg); } .callout-warning .callout-icon, .callout-warning strong { color: var(--warn); }
-    .callout-info { background: var(--info-bg); } .callout-info .callout-icon, .callout-info strong { color: var(--info); }
+    .callout-error { background: var(--fail-bg); border-color: rgba(248,113,113,.35); } .callout-error .callout-icon, .callout-error strong { color: var(--fail); }
+    .callout-warning { background: var(--warn-bg); border-color: rgba(251,191,36,.35); } .callout-warning .callout-icon, .callout-warning strong { color: var(--warn); }
+    .callout-info { background: var(--info-bg); border-color: rgba(96,165,250,.35); } .callout-info .callout-icon, .callout-info strong { color: var(--info); }
 
     /* Footer */
     .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 26px; }

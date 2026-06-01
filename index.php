@@ -265,7 +265,7 @@ function detectedTypeNote(string $type): string
 function callout(string $type, string $title, string $body): string
 {
   $icons = [
-    'error'   => '&#9888;',
+    'error'   => '&#10060;',
     'warning' => '&#9888;',
     'info'    => '&#8505;',
   ];
