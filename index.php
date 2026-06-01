@@ -389,7 +389,7 @@ if (!empty($_POST['roll_data'])) {
       --warn-bg: rgba(251, 191, 36, .12);
       --info: #60a5fa;
       --info-bg: rgba(96, 165, 250, .12);
-      --radius: 16px;
+      --radius: 14px;
       --shadow: 0 18px 50px rgba(0, 0, 0, .45);
     }
 
@@ -520,7 +520,7 @@ if (!empty($_POST['roll_data'])) {
 
     .detected-type {
       display: inline-block;
-      padding: 6px 12px; border-radius: var(--radius);
+      padding: 6px 12px; border-radius: 12px;
       background: rgba(123, 79, 255, .12); border: 1px solid var(--border);
       color: var(--muted); font-size: 14px;
     }
