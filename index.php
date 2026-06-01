@@ -545,9 +545,9 @@ if (!empty($_POST['roll_data'])) {
     .cmp-title { font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 10px; }
     .cmp-row { display: flex; justify-content: space-between; gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--border); }
     .cmp-row:last-of-type { border-bottom: 0; }
-    .cmp-label { color: var(--muted); font-size: 14px; flex: none; }
-    .cmp-value { font-weight: 700; text-align: right; word-break: break-all; }
-    .cmp-value.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; font-size: .82rem; }
+    .cmp-label { color: var(--muted); font-size: 13px; flex: none; }
+    .cmp-value { font-weight: 700; text-align: right; word-break: break-all; font-size: 13px; }
+    .cmp-value.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; font-size: 13px; }
     .verdict { margin-top: 12px; padding: 9px 12px; border-radius: 9px; font-weight: 600; font-size: .9rem; display: flex; align-items: center; gap: 8px; }
     .verdict-icon { font-size: 1rem; }
     .verdict-ok { background: var(--ok-bg); color: var(--ok); }
