@@ -314,6 +314,14 @@ if (!empty($_POST['roll_data'])) {
 
     .wrap { max-width: 760px; margin: 0 auto; }
 
+    /* Top bar */
+    .topbar { display: flex; justify-content: flex-start; margin-bottom: 18px; }
+    .topbar a { display: inline-flex; align-items: center; line-height: 0; }
+    .topbar img {
+      height: 32px; width: auto; display: block;
+      image-rendering: -webkit-optimize-contrast;
+    }
+
     /* Header */
     .hero { text-align: center; margin-bottom: 26px; }
     .badge {
@@ -514,6 +522,12 @@ if (!empty($_POST['roll_data'])) {
 </head>
 <body>
   <div class="wrap">
+
+    <div class="topbar">
+      <a href="https://skin.club" target="_blank" rel="noopener noreferrer">
+        <img src="https://skin.club/favicon.ico" alt="skin.club" width="32" height="32">
+      </a>
+    </div>
 
     <header class="hero">
       <span class="badge">&#128737; Provably Fair</span>
