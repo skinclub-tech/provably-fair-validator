@@ -537,7 +537,7 @@ if (!empty($_POST['roll_data'])) {
     .summary-ok { background: var(--ok-bg); border-color: rgba(52,211,153,.35); }
     .summary-ok .summary-icon { background: rgba(52,211,153,.18); color: var(--ok); }
     .summary-ok strong { color: var(--ok); }
-    .summary-fail { background: var(--fail-bg); }
+    .summary-fail { background: var(--fail-bg); border-color: rgba(248,113,113,.35); }
     .summary-fail .summary-icon { background: rgba(248,113,113,.18); color: var(--fail); }
     .summary-fail strong { color: var(--fail); }
 
