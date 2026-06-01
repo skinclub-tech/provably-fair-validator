@@ -93,28 +93,49 @@ check('unknown roll type shows error',
 
 $regularMissingField = $regular;
 unset($regularMissingField['public_hash']);
+$regularMissingFieldOut = verifyRollData(json_encode($regularMissingField));
 check('regular payload missing a required field shows error',
-  str_contains(verifyRollData(json_encode($regularMissingField)), 'callout-error'));
+  str_contains($regularMissingFieldOut, 'callout-error'));
+check('regular missing field error names the missing field',
+  str_contains($regularMissingFieldOut, 'public_hash'));
 
 $regularMissingRoll = $regular;
 unset($regularMissingRoll['roll']);
+$regularMissingRollOut = verifyRollData(json_encode($regularMissingRoll));
 check('regular payload missing roll shows error',
-  str_contains(verifyRollData(json_encode($regularMissingRoll)), 'callout-error'));
+  str_contains($regularMissingRollOut, 'callout-error'));
+check('regular missing roll error names the roll field',
+  str_contains($regularMissingRollOut, 'roll'));
+
+$regularMissingMultiple = $regular;
+unset($regularMissingMultiple['public_hash'], $regularMissingMultiple['nonce']);
+$regularMissingMultipleOut = verifyRollData(json_encode($regularMissingMultiple));
+check('regular missing multiple fields names each one',
+  str_contains($regularMissingMultipleOut, 'public_hash') && str_contains($regularMissingMultipleOut, 'nonce'));
 
 $battleMissingField = $battle;
 unset($battleMissingField['beacon']);
+$battleMissingFieldOut = verifyRollData(json_encode($battleMissingField));
 check('battle payload missing a required field shows error',
-  str_contains(verifyRollData(json_encode($battleMissingField)), 'callout-error'));
+  str_contains($battleMissingFieldOut, 'callout-error'));
+check('battle missing field error names the missing field',
+  str_contains($battleMissingFieldOut, 'beacon'));
 
 $emptyField = $regular;
 $emptyField['client_seed'] = '';
+$emptyFieldOut = verifyRollData(json_encode($emptyField));
 check('empty field value is treated as missing',
-  str_contains(verifyRollData(json_encode($emptyField)), 'callout-error'));
+  str_contains($emptyFieldOut, 'callout-error'));
+check('empty field error names the empty field',
+  str_contains($emptyFieldOut, 'client_seed'));
 
 $whitespaceField = $regular;
 $whitespaceField['client_seed'] = '   ';
+$whitespaceFieldOut = verifyRollData(json_encode($whitespaceField));
 check('whitespace-only field value is treated as missing',
-  str_contains(verifyRollData(json_encode($whitespaceField)), 'callout-error'));
+  str_contains($whitespaceFieldOut, 'callout-error'));
+check('whitespace field error names the field',
+  str_contains($whitespaceFieldOut, 'client_seed'));
 
 echo "\n{$passed} passed, {$failed} failed\n";
 exit($failed === 0 ? 0 : 1);

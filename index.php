@@ -24,22 +24,34 @@ function calculatePublicHash(string $secret, string $salt): string
   return hash_hmac('sha256', $secret, $salt);
 }
 
-function checkRequiredProps(object $obj, array $props): bool
+function missingRequiredProps(object $obj, array $props): array
 {
+  $missing = [];
   foreach($props as $prop) {
     if(!isset($obj->$prop) || trim((string)$obj->$prop) === '') {
-      return false;
+      $missing[] = $prop;
     }
   }
 
-  return true;
+  return $missing;
+}
+
+function missingFieldsError(array $missing): string
+{
+  $names = implode(', ', array_map(fn($f) => "<code>{$f}</code>", $missing));
+  $label = count($missing) === 1 ? 'field is' : 'fields are';
+  return callout('error', 'Your input is invalid.', "The following {$label} missing or empty: {$names}. Copy the full JSON string from the site and paste it here.");
 }
 
 function checkRegularRoll($data): string
 {
   $req = ['server_seed', 'secret_salt', 'public_hash', 'client_seed', 'nonce', 'roll'];
-  if (!is_object($data) || !checkRequiredProps($data, $req)) {
+  if (!is_object($data)) {
     return callout('error', 'Your input is invalid.', 'Copy the full JSON string from the site and paste it here.');
+  }
+  $missing = missingRequiredProps($data, $req);
+  if ($missing) {
+    return missingFieldsError($missing);
   }
   if($data->server_seed[0] === '*' || $data->secret_salt[0] === '*') {
     return callout('warning', 'Server Seed is not yet revealed.', 'It is impossible to verify this roll right now &mdash; check back after the seed is revealed.');
@@ -66,8 +78,12 @@ function checkRegularRoll($data): string
 function checkBattleRoll($data): string
 {
   $req = ['beacon', 'client_seed', 'nonce', 'roll'];
-  if (!is_object($data) || !checkRequiredProps($data, $req)) {
+  if (!is_object($data)) {
     return callout('error', 'Your input is invalid.', 'Copy the full JSON string from the site and paste it here.');
+  }
+  $missing = missingRequiredProps($data, $req);
+  if ($missing) {
+    return missingFieldsError($missing);
   }
   if($data->beacon[0] === '*') {
     return callout('warning', 'Beacon is not yet generated.', 'It is impossible to verify this roll right now &mdash; check back once the beacon is available.');
