@@ -327,21 +327,21 @@ if (!empty($_POST['roll_data'])) {
 
     .wrap { max-width: 760px; margin: 0 auto; }
 
-    /* Top bar */
-    .topbar { display: flex; justify-content: flex-start; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--border-soft); }
-    .topbar a { display: inline-flex; align-items: center; line-height: 0; }
-    .topbar img {
+    /* Header */
+    .site-header {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
+      margin: 8px 0 26px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .site-header a { display: inline-flex; align-items: center; line-height: 0; }
+    .site-header img {
       height: 32px; width: auto; display: block;
       image-rendering: -webkit-optimize-contrast;
     }
-
-    /* Header */
-    .hero { text-align: center; margin-bottom: 26px; }
-    .hero h1 {
-      margin: 16px 0 8px;
+    .site-header h1 {
+      margin: 0;
       font-size: 2rem; line-height: 1.15; font-weight: 800;
-      background: linear-gradient(90deg, #fff, #c4b0ff);
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      color: #f5f5fa;
     }
 
     /* Cards */
@@ -496,7 +496,7 @@ if (!empty($_POST['roll_data'])) {
     .footer .footer-links { display: flex; justify-content: center; gap: 16px; }
 
     @media (max-width: 520px) {
-      .hero h1 { font-size: 1.6rem; }
+      .site-header h1 { font-size: 1.6rem; }
       .cmp-row { flex-direction: column; gap: 2px; }
       .cmp-value { text-align: left; }
     }
@@ -505,13 +505,10 @@ if (!empty($_POST['roll_data'])) {
 <body>
   <div class="wrap">
 
-    <div class="topbar">
+    <header class="site-header">
       <a href="https://skin.club" target="_blank" rel="noopener noreferrer">
         <img src="assets/skinclub-mark.svg" alt="skin.club" width="32" height="32">
       </a>
-    </div>
-
-    <header class="hero">
       <h1>Verify your Rolls</h1>
     </header>
 
