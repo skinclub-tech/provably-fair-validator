@@ -50,12 +50,12 @@ function rollSteps(string $seed, string $clientSeed, int $nonce): array
  * Render a collapsed <details> spoiler that lists each calculation step.
  * $steps is an ordered list of [label, value, sublabel?, formula?, valueHtml?].
  *   - label     : short plain-language title for the step
- *   - value     : the raw result text (also used for the Copy button)
+ *   - value     : the raw result text
  *   - sublabel  : optional one-line explanation of what/why
  *   - formula   : optional function-call expression with values substituted in
  *   - valueHtml : optional pre-rendered HTML for the value (e.g. with a
  *                 highlighted slice); when present it is shown instead of the
- *                 escaped $value, but Copy still uses the raw $value.
+ *                 escaped $value.
  */
 function calculationSpoiler(array $steps): string
 {
@@ -69,7 +69,6 @@ function calculationSpoiler(array $steps): string
     $valueHtml = $step[4] ?? null;
 
     $v = $valueHtml !== null ? $valueHtml : htmlspecialchars($value);
-    $vAttr = htmlspecialchars($value, ENT_QUOTES);
 
     $sublabelHtml = $sublabel !== ''
       ? "<div class='calc-sublabel'>" . htmlspecialchars($sublabel) . "</div>"
@@ -85,7 +84,6 @@ function calculationSpoiler(array $steps): string
            . $formulaHtml
            . "<div class='calc-value-row'>"
            . "<div class='calc-value mono'>{$v}</div>"
-           . "<button type='button' class='calc-copy' data-copy='{$vAttr}' aria-label='Copy value'>Copy</button>"
            . "</div></div>"
            . "</div>";
     $n++;
@@ -569,16 +567,6 @@ if (!empty($_POST['roll_data'])) {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-weight: 600; font-size: .82rem; white-space: pre-wrap; color: #cdd6ff;
     }
-    .calc-copy {
-      flex: none; cursor: pointer; border: 1px solid var(--border);
-      background: var(--bg); color: var(--muted); border-radius: 8px;
-      padding: 4px 10px; font-size: .76rem; font-weight: 700;
-      font-family: inherit;
-      transition: background .15s, color .15s, border-color .15s;
-    }
-    .calc-copy:hover { color: var(--brand-link); border-color: var(--brand); }
-    .calc-copy.copied { color: var(--ok, #4ade80); border-color: var(--ok, #4ade80); }
-
     /* Spoiler text reduction: 1px smaller than the same element outside a details */
     details summary { font-size: 12.8px; }
     details .card p { font-size: 13px; }
@@ -593,7 +581,6 @@ if (!empty($_POST['roll_data'])) {
     details .calc-value { font-size: 14px; }
     details .calc-value.mono { font-size: 11.3px; }
     details .calc-step-num { font-size: 10.4px; }
-    details .calc-copy { font-size: 10.4px; }
 
     /* Callouts (errors / warnings) */
     .callout { display: flex; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); }
@@ -721,37 +708,6 @@ if (!empty($_POST['roll_data'])) {
       if (!ta) return;
       autoSize(ta);
       ta.addEventListener('input', () => autoSize(ta));
-    });
-
-    async function copyText(text) {
-      if (navigator.clipboard && window.isSecureContext) {
-        try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
-      }
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.focus();
-      ta.select();
-      let ok = false;
-      try { ok = document.execCommand('copy'); } catch (e) {}
-      document.body.removeChild(ta);
-      return ok;
-    }
-
-    document.addEventListener('click', async (e) => {
-      const btn = e.target.closest('.calc-copy');
-      if (!btn) return;
-      const ok = await copyText(btn.dataset.copy || '');
-      const original = btn.dataset.label || (btn.dataset.label = btn.textContent);
-      btn.textContent = ok ? 'Copied!' : 'Failed';
-      btn.classList.toggle('copied', ok);
-      clearTimeout(btn._t);
-      btn._t = setTimeout(() => {
-        btn.textContent = original;
-        btn.classList.remove('copied');
-      }, 1500);
     });
   </script>
 </body>
