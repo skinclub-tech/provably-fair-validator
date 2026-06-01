@@ -39,4 +39,21 @@ document.addEventListener('DOMContentLoaded', () => {
       autoSize(ta);
     }, 0);
   });
+
+  const form = document.getElementById('roll-form');
+  if (form) {
+    const btn = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', () => {
+      if (!btn) return;
+      btn.textContent = 'Checking…';
+      btn.disabled = true;
+      btn.classList.add('btn-loading');
+    });
+    window.addEventListener('pageshow', () => {
+      if (!btn) return;
+      btn.textContent = 'Check';
+      btn.disabled = false;
+      btn.classList.remove('btn-loading');
+    });
+  }
 });

@@ -145,6 +145,9 @@
       clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
     }
     .btn-primary:hover { filter: brightness(1.08); }
+    .btn-loading { opacity: .55; cursor: not-allowed; }
+    .btn-loading:hover { filter: none; }
+    .btn-loading:active { transform: none; }
     .btn-ghost { background: var(--panel-2); color: var(--text); border-color: var(--border); }
     .btn-ghost:hover { background: #2c2656; border-color: var(--brand); }
     .spacer { flex: 1; }

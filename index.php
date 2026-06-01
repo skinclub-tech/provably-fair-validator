@@ -375,7 +375,7 @@ if (!empty($_POST['roll_data'])) {
     <?php endif; ?>
 
     <section class="card">
-      <form method="post" action="/">
+      <form method="post" action="/" id="roll-form">
         <div class="label-row">
           <label class="field-label" for="roll_data">Paste your roll data</label>
           <div class="sample-controls">
