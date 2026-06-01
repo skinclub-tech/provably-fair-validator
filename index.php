@@ -60,11 +60,11 @@ function calculationSpoiler(array $steps): string
   $rows = '';
   $n = 1;
   foreach ($steps as $step) {
-    $label    = $step[0];
-    $value    = $step[1];
-    $sublabel = $step[2] ?? '';
-    $formula  = $step[3] ?? '';
-    $valueHtml = $step[4] ?? null;
+    $label    = $step['label'];
+    $value    = $step['value'];
+    $sublabel = $step['sublabel'] ?? '';
+    $formula  = $step['formula'] ?? '';
+    $valueHtml = $step['valueHtml'] ?? null;
 
     $v = $valueHtml !== null ? $valueHtml : htmlspecialchars($value);
 
@@ -148,44 +148,43 @@ function checkRegularRoll($data, ?string &$detectedType = null): string
   $hashHl = "<span class='calc-hash-hl'>" . htmlspecialchars($s['subHash']) . "</span>" . htmlspecialchars(substr($s['hash'], ROLL_CHARS));
   $spoiler = calculationSpoiler([
     [
-      'Hash the inputs',
-      "key:     {$s['message']}\nmessage: {$data->server_seed}",
-      'The client seed and nonce form the key; the server seed is the message.',
-      "HMAC-SHA512(key: \"{$s['message']}\", message: {$data->server_seed})",
+      'label'    => 'Hash the inputs',
+      'value'    => "key:     {$s['message']}\nmessage: {$data->server_seed}",
+      'sublabel' => 'The client seed and nonce form the key; the server seed is the message.',
+      'formula'  => "HMAC-SHA512(key: \"{$s['message']}\", message: {$data->server_seed})",
     ],
     [
-      'Read the full digest',
-      $s['hash'],
-      'HMAC-SHA512 returns 128 hex characters — only the first ' . ROLL_CHARS . ' (highlighted) are used.',
-      '',
-      $hashHl,
+      'label'     => 'Read the full digest',
+      'value'     => $s['hash'],
+      'sublabel'  => 'HMAC-SHA512 returns 128 hex characters — only the first ' . ROLL_CHARS . ' (highlighted) are used.',
+      'valueHtml' => $hashHl,
     ],
     [
-      'Take the first ' . ROLL_CHARS . ' characters',
-      $s['subHash'],
-      'This slice of the digest is what decides the roll.',
-      'substr(digest, 0, ' . ROLL_CHARS . ')',
+      'label'    => 'Take the first ' . ROLL_CHARS . ' characters',
+      'value'    => $s['subHash'],
+      'sublabel' => 'This slice of the digest is what decides the roll.',
+      'formula'  => 'substr(digest, 0, ' . ROLL_CHARS . ')',
     ],
     [
-      'Convert hex to a decimal number',
-      "hexdec(\"{$s['subHash']}\") = {$s['decimal']}",
-      'Read those ' . ROLL_CHARS . ' hex characters as a base-10 integer.',
+      'label'    => 'Convert hex to a decimal number',
+      'value'    => "hexdec(\"{$s['subHash']}\") = {$s['decimal']}",
+      'sublabel' => 'Read those ' . ROLL_CHARS . ' hex characters as a base-10 integer.',
     ],
     [
-      'Scale into the roll range',
-      "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}",
-      'Wrap the number into 0–' . (ROLL_MAX - 1) . ', then add 1 to land between 1 and ' . ROLL_MAX . '.',
+      'label'    => 'Scale into the roll range',
+      'value'    => "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}",
+      'sublabel' => 'Wrap the number into 0–' . (ROLL_MAX - 1) . ', then add 1 to land between 1 and ' . ROLL_MAX . '.',
     ],
     [
-      'Hash the server seed for the public commitment',
-      "key:     {$data->secret_salt}\nmessage: {$data->server_seed}",
-      'HMAC-SHA256 over the server seed (keyed by the secret salt) produces the published hash.',
-      "HMAC-SHA256(key: {$data->secret_salt}, message: {$data->server_seed})",
+      'label'    => 'Hash the server seed for the public commitment',
+      'value'    => "key:     {$data->secret_salt}\nmessage: {$data->server_seed}",
+      'sublabel' => 'HMAC-SHA256 over the server seed (keyed by the secret salt) produces the published hash.',
+      'formula'  => "HMAC-SHA256(key: {$data->secret_salt}, message: {$data->server_seed})",
     ],
     [
-      'Read the public hash',
-      $calculatedPublicHash,
-      'This should match the hash the website published before the roll.',
+      'label'    => 'Read the public hash',
+      'value'    => $calculatedPublicHash,
+      'sublabel' => 'This should match the hash the website published before the roll.',
     ],
   ]);
 
@@ -222,33 +221,32 @@ function checkBattleRoll($data, ?string &$detectedType = null): string
   $hashHl = "<span class='calc-hash-hl'>" . htmlspecialchars($s['subHash']) . "</span>" . htmlspecialchars(substr($s['hash'], ROLL_CHARS));
   $spoiler = calculationSpoiler([
     [
-      'Hash the inputs',
-      "key:     {$s['message']}\nmessage: {$data->beacon}",
-      'The client seed and nonce form the key; the beacon is the message.',
-      "HMAC-SHA512(key: \"{$s['message']}\", message: {$data->beacon})",
+      'label'    => 'Hash the inputs',
+      'value'    => "key:     {$s['message']}\nmessage: {$data->beacon}",
+      'sublabel' => 'The client seed and nonce form the key; the beacon is the message.',
+      'formula'  => "HMAC-SHA512(key: \"{$s['message']}\", message: {$data->beacon})",
     ],
     [
-      'Read the full digest',
-      $s['hash'],
-      'HMAC-SHA512 returns 128 hex characters — only the first ' . ROLL_CHARS . ' (highlighted) are used.',
-      '',
-      $hashHl,
+      'label'     => 'Read the full digest',
+      'value'     => $s['hash'],
+      'sublabel'  => 'HMAC-SHA512 returns 128 hex characters — only the first ' . ROLL_CHARS . ' (highlighted) are used.',
+      'valueHtml' => $hashHl,
     ],
     [
-      'Take the first ' . ROLL_CHARS . ' characters',
-      $s['subHash'],
-      'This slice of the digest is what decides the roll.',
-      'substr(digest, 0, ' . ROLL_CHARS . ')',
+      'label'    => 'Take the first ' . ROLL_CHARS . ' characters',
+      'value'    => $s['subHash'],
+      'sublabel' => 'This slice of the digest is what decides the roll.',
+      'formula'  => 'substr(digest, 0, ' . ROLL_CHARS . ')',
     ],
     [
-      'Convert hex to a decimal number',
-      "hexdec(\"{$s['subHash']}\") = {$s['decimal']}",
-      'Read those ' . ROLL_CHARS . ' hex characters as a base-10 integer.',
+      'label'    => 'Convert hex to a decimal number',
+      'value'    => "hexdec(\"{$s['subHash']}\") = {$s['decimal']}",
+      'sublabel' => 'Read those ' . ROLL_CHARS . ' hex characters as a base-10 integer.',
     ],
     [
-      'Scale into the roll range',
-      "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}",
-      'Wrap the number into 0–' . (ROLL_MAX - 1) . ', then add 1 to land between 1 and ' . ROLL_MAX . '.',
+      'label'    => 'Scale into the roll range',
+      'value'    => "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}",
+      'sublabel' => 'Wrap the number into 0–' . (ROLL_MAX - 1) . ', then add 1 to land between 1 and ' . ROLL_MAX . '.',
     ],
   ]);
 
