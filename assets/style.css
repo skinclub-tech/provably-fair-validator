@@ -262,6 +262,7 @@
     .footer .footer-links a img { display: block; }
     .footer .footer-chip { display: inline-flex; align-items: center; height: 36px; box-sizing: border-box; border-radius: 8px; background: #0F1017; border: 1px solid #1A1C25; color: #E8E4FF; font-size: 13px; font-weight: 600; padding: 0 14px; transition: filter .15s ease; }
     .footer-chip:hover { filter: brightness(1.25); text-decoration: none; }
+    .footer-chip:focus-visible { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px rgba(123, 79, 255, .18); text-decoration: none; }
 
     @media (max-width: 520px) {
       .site-header h1 { font-size: 1.25rem; }
