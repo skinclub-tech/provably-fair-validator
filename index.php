@@ -296,7 +296,10 @@ if (!empty($_POST['roll_data'])) {
     }
 
     /* Form */
-    .field-label { display: block; font-weight: 600; margin-bottom: 8px; }
+    .field-label { font-weight: 600; }
+    .label-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+    .sample-controls { display: flex; align-items: center; gap: 6px; }
+    .btn-sm { padding: 5px 11px; border-radius: 8px; font-size: .78rem; }
     .hint { color: var(--muted); font-weight: 400; font-size: .85rem; }
     textarea {
       width: 100%; min-height: 190px; resize: vertical;
@@ -399,7 +402,14 @@ if (!empty($_POST['roll_data'])) {
     <section class="card">
       <h2><span class="dot">&#9989;</span> Check a roll</h2>
       <form method="post" action="/">
-        <label class="field-label" for="roll_data">Enter your roll data <span class="hint">&mdash; paste the JSON from the site</span></label>
+        <div class="label-row">
+          <label class="field-label" for="roll_data">Enter your roll data <span class="hint">&mdash; paste the JSON from the site</span></label>
+          <div class="sample-controls">
+            <span class="sample-label">Try a sample:</span>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="loadSample('regular')">Regular</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="loadSample('battle')">Battle</button>
+          </div>
+        </div>
         <textarea id="roll_data" name="roll_data" placeholder='{
   "server_seed": "...",
   "secret_salt": "...",
@@ -411,10 +421,6 @@ if (!empty($_POST['roll_data'])) {
 
         <div class="actions">
           <button type="submit" class="btn btn-primary">Check!</button>
-          <span class="spacer"></span>
-          <span class="sample-label">Try a sample:</span>
-          <button type="button" class="btn btn-ghost" onclick="loadSample('regular')">Regular</button>
-          <button type="button" class="btn btn-ghost" onclick="loadSample('battle')">Battle</button>
         </div>
       </form>
     </section>
