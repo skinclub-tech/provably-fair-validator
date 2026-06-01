@@ -412,7 +412,7 @@ if (!empty($_POST['roll_data'])) {
     /* Header */
     .site-header {
       display: flex; align-items: center; flex-wrap: wrap; gap: 32px;
-      margin: 8px 0 26px; padding-bottom: 16px;
+      margin: 8px 0 34px; padding-bottom: 20px;
       border-bottom: 1px solid var(--border-soft);
     }
     .site-header a { display: inline-flex; align-items: center; line-height: 0; }
@@ -432,8 +432,8 @@ if (!empty($_POST['roll_data'])) {
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 22px;
-      margin-bottom: 20px;
+      padding: 28px;
+      margin-bottom: 28px;
     }
     .card h2 {
       margin: 0 0 14px;
@@ -459,13 +459,13 @@ if (!empty($_POST['roll_data'])) {
 
     /* Form */
     .field-label { font-weight: 600; }
-    .label-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+    .label-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
     .sample-controls { display: flex; align-items: center; gap: 6px; }
     .btn-sample {
       appearance: none; cursor: pointer; border: none;
       background: #282546;
       clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%);
-      padding: 6px 22px; font-family: inherit; font-size: 12px; font-weight: 500;
+      padding: 12px 22px; font-family: inherit; font-size: 12px; font-weight: 500;
       color: var(--text); transition: filter .15s ease;
     }
     .btn-sample:hover { filter: brightness(1.2); }
@@ -482,7 +482,7 @@ if (!empty($_POST['roll_data'])) {
       box-shadow: 0 0 0 4px rgba(123, 79, 255, .18);
     }
 
-    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; align-items: center; }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 24px; align-items: center; }
     .btn {
       appearance: none; cursor: pointer; border: 1px solid transparent;
       padding: 11px 30px; border-radius: 11px; font-size: .92rem; font-weight: 700;
@@ -492,6 +492,7 @@ if (!empty($_POST['roll_data'])) {
     .btn:active { transform: translateY(1px); }
     .btn-primary {
       background: #5c49d0; color: #ffffff; box-shadow: none;
+      padding: 11px 60px;
       font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
       clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
     }
