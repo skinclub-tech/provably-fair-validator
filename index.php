@@ -397,6 +397,29 @@ if (!empty($_POST['roll_data'])) {
     <?php endif; ?>
 
     <section class="card">
+      <h2><span class="dot">&#9989;</span> Check a roll</h2>
+      <form method="post" action="/">
+        <label class="field-label" for="roll_data">Enter your roll data <span class="hint">&mdash; paste the JSON from the site</span></label>
+        <textarea id="roll_data" name="roll_data" placeholder='{
+  "server_seed": "...",
+  "secret_salt": "...",
+  "public_hash": "...",
+  "client_seed": "...",
+  "nonce": "...",
+  "roll": "..."
+}'><?= htmlspecialchars($_POST['roll_data'] ?? '') ?></textarea>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Check!</button>
+          <span class="spacer"></span>
+          <span class="sample-label">Try a sample:</span>
+          <button type="button" class="btn btn-ghost" onclick="loadSample('regular')">Regular</button>
+          <button type="button" class="btn btn-ghost" onclick="loadSample('battle')">Battle</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
       <h2><span class="dot">&#128161;</span> How to verify in 4 steps</h2>
       <ol class="tips">
         <li>Open the <strong>&ldquo;Check Roll&rdquo;</strong> (Fairness) page on skin.club for the drop you want to verify.</li>
@@ -422,29 +445,6 @@ if (!empty($_POST['roll_data'])) {
           </dl>
         </details>
       </div>
-    </section>
-
-    <section class="card">
-      <h2><span class="dot">&#9989;</span> Check a roll</h2>
-      <form method="post" action="/">
-        <label class="field-label" for="roll_data">Enter your roll data <span class="hint">&mdash; paste the JSON from the site</span></label>
-        <textarea id="roll_data" name="roll_data" placeholder='{
-  "server_seed": "...",
-  "secret_salt": "...",
-  "public_hash": "...",
-  "client_seed": "...",
-  "nonce": "...",
-  "roll": "..."
-}'><?= htmlspecialchars($_POST['roll_data'] ?? '') ?></textarea>
-
-        <div class="actions">
-          <button type="submit" class="btn btn-primary">Check!</button>
-          <span class="spacer"></span>
-          <span class="sample-label">Try a sample:</span>
-          <button type="button" class="btn btn-ghost" onclick="loadSample('regular')">Regular</button>
-          <button type="button" class="btn btn-ghost" onclick="loadSample('battle')">Battle</button>
-        </div>
-      </form>
     </section>
 
     <div class="footer">
