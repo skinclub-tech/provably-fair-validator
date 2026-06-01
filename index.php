@@ -48,18 +48,41 @@ function rollSteps(string $seed, string $clientSeed, int $nonce): array
 
 /**
  * Render a collapsed <details> spoiler that lists each calculation step.
- * $steps is an ordered list of [label, value] pairs.
+ * $steps is an ordered list of [label, value, sublabel?, formula?, valueHtml?].
+ *   - label     : short plain-language title for the step
+ *   - value     : the raw result text (also used for the Copy button)
+ *   - sublabel  : optional one-line explanation of what/why
+ *   - formula   : optional function-call expression with values substituted in
+ *   - valueHtml : optional pre-rendered HTML for the value (e.g. with a
+ *                 highlighted slice); when present it is shown instead of the
+ *                 escaped $value, but Copy still uses the raw $value.
  */
 function calculationSpoiler(array $steps): string
 {
   $rows = '';
   $n = 1;
-  foreach ($steps as [$label, $value]) {
-    $v = htmlspecialchars($value);
+  foreach ($steps as $step) {
+    $label    = $step[0];
+    $value    = $step[1];
+    $sublabel = $step[2] ?? '';
+    $formula  = $step[3] ?? '';
+    $valueHtml = $step[4] ?? null;
+
+    $v = $valueHtml !== null ? $valueHtml : htmlspecialchars($value);
     $vAttr = htmlspecialchars($value, ENT_QUOTES);
+
+    $sublabelHtml = $sublabel !== ''
+      ? "<div class='calc-sublabel'>" . htmlspecialchars($sublabel) . "</div>"
+      : '';
+    $formulaHtml = $formula !== ''
+      ? "<div class='calc-formula'>" . htmlspecialchars($formula) . "</div>"
+      : '';
+
     $rows .= "<div class='calc-step'>"
            . "<div class='calc-step-num'>{$n}</div>"
            . "<div class='calc-step-body'><div class='calc-label'>{$label}</div>"
+           . $sublabelHtml
+           . $formulaHtml
            . "<div class='calc-value-row'>"
            . "<div class='calc-value mono'>{$v}</div>"
            . "<button type='button' class='calc-copy' data-copy='{$vAttr}' aria-label='Copy value'>Copy</button>"
@@ -126,14 +149,48 @@ function checkRegularRoll($data): string
     : "<div class='summary summary-fail'><span class='summary-icon'>&#10007;</span><div><strong>Verification failed.</strong><span>One or more values did not match. See details below.</span></div></div>";
 
   $s = rollSteps($data->server_seed, $data->client_seed, (int)$data->nonce);
+  $hashHl = "<span class='calc-hash-hl'>" . htmlspecialchars($s['subHash']) . "</span>" . htmlspecialchars(substr($s['hash'], ROLL_CHARS));
   $spoiler = calculationSpoiler([
-    ['HMAC-SHA512 inputs &mdash; key = "client_seed-nonce", message = server_seed', "key:     {$s['message']}\nmessage: {$data->server_seed}"],
-    ['Full HMAC-SHA512 digest (128 hex characters)', $s['hash']],
-    ['First ' . ROLL_CHARS . ' hex characters', $s['subHash']],
-    ['Decimal (base-10) value of those characters', (string)$s['decimal']],
-    ['Take mod ' . ROLL_MAX . ', then add 1 &rarr; roll number', "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}"],
-    ['HMAC-SHA256 inputs for public hash &mdash; key = secret_salt, message = server_seed', "key:     {$data->secret_salt}\nmessage: {$data->server_seed}"],
-    ['Resulting public hash digest', $calculatedPublicHash],
+    [
+      'Hash the inputs',
+      "key:     {$s['message']}\nmessage: {$data->server_seed}",
+      'The client seed and nonce form the key; the server seed is the message.',
+      "HMAC-SHA512(key: \"{$s['message']}\", message: {$data->server_seed})",
+    ],
+    [
+      'Read the full digest',
+      $s['hash'],
+      'HMAC-SHA512 returns 128 hex characters — only the first ' . ROLL_CHARS . ' (highlighted) are used.',
+      '',
+      $hashHl,
+    ],
+    [
+      'Take the first ' . ROLL_CHARS . ' characters',
+      $s['subHash'],
+      'This slice of the digest is what decides the roll.',
+      'substr(digest, 0, ' . ROLL_CHARS . ')',
+    ],
+    [
+      'Convert hex to a decimal number',
+      "hexdec(\"{$s['subHash']}\") = {$s['decimal']}",
+      'Read those ' . ROLL_CHARS . ' hex characters as a base-10 integer.',
+    ],
+    [
+      'Scale into the roll range',
+      "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}",
+      'Wrap the number into 0–' . (ROLL_MAX - 1) . ', then add 1 to land between 1 and ' . ROLL_MAX . '.',
+    ],
+    [
+      'Hash the server seed for the public commitment',
+      "key:     {$data->secret_salt}\nmessage: {$data->server_seed}",
+      'HMAC-SHA256 over the server seed (keyed by the secret salt) produces the published hash.',
+      "HMAC-SHA256(key: {$data->secret_salt}, message: {$data->server_seed})",
+    ],
+    [
+      'Read the public hash',
+      $calculatedPublicHash,
+      'This should match the hash skin.club published before the roll.',
+    ],
   ]);
 
   return detectedTypeNote('regular')
@@ -166,12 +223,37 @@ function checkBattleRoll($data): string
     : "<div class='summary summary-fail'><span class='summary-icon'>&#10007;</span><div><strong>Verification failed.</strong><span>The recalculated roll did not match. See details below.</span></div></div>";
 
   $s = rollSteps($data->beacon, $data->client_seed, (int)$data->nonce);
+  $hashHl = "<span class='calc-hash-hl'>" . htmlspecialchars($s['subHash']) . "</span>" . htmlspecialchars(substr($s['hash'], ROLL_CHARS));
   $spoiler = calculationSpoiler([
-    ['HMAC-SHA512 inputs &mdash; key = "client_seed-nonce", message = beacon', "key:     {$s['message']}\nmessage: {$data->beacon}"],
-    ['Full HMAC-SHA512 digest (128 hex characters)', $s['hash']],
-    ['First ' . ROLL_CHARS . ' hex characters', $s['subHash']],
-    ['Decimal (base-10) value of those characters', (string)$s['decimal']],
-    ['Take mod ' . ROLL_MAX . ', then add 1 &rarr; roll number', "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}"],
+    [
+      'Hash the inputs',
+      "key:     {$s['message']}\nmessage: {$data->beacon}",
+      'The client seed and nonce form the key; the beacon is the message.',
+      "HMAC-SHA512(key: \"{$s['message']}\", message: {$data->beacon})",
+    ],
+    [
+      'Read the full digest',
+      $s['hash'],
+      'HMAC-SHA512 returns 128 hex characters — only the first ' . ROLL_CHARS . ' (highlighted) are used.',
+      '',
+      $hashHl,
+    ],
+    [
+      'Take the first ' . ROLL_CHARS . ' characters',
+      $s['subHash'],
+      'This slice of the digest is what decides the roll.',
+      'substr(digest, 0, ' . ROLL_CHARS . ')',
+    ],
+    [
+      'Convert hex to a decimal number',
+      "hexdec(\"{$s['subHash']}\") = {$s['decimal']}",
+      'Read those ' . ROLL_CHARS . ' hex characters as a base-10 integer.',
+    ],
+    [
+      'Scale into the roll range',
+      "{$s['decimal']} mod " . ROLL_MAX . " = {$s['mod']}\n{$s['mod']} + 1 = {$s['roll']}",
+      'Wrap the number into 0–' . (ROLL_MAX - 1) . ', then add 1 to land between 1 and ' . ROLL_MAX . '.',
+    ],
   ]);
 
   return detectedTypeNote('battle')
@@ -471,7 +553,14 @@ if (!empty($_POST['roll_data'])) {
       color: #ffffff; font-weight: 800; font-size: .76rem;
     }
     .calc-step-body { flex: 1; min-width: 0; }
-    .calc-label { color: var(--muted); font-size: 14px; margin-bottom: 4px; }
+    .calc-label { color: var(--text); font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .calc-sublabel { color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-bottom: 4px; }
+    .calc-formula {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-style: italic; color: var(--muted); font-size: 12px;
+      word-break: break-all; margin-bottom: 6px;
+    }
+    .calc-hash-hl { color: var(--brand-2); font-weight: 800; }
     .calc-value-row { display: flex; gap: 8px; align-items: flex-start; }
     .calc-value { font-weight: 700; word-break: break-all; flex: 1; min-width: 0; }
     .calc-value.mono {
@@ -497,6 +586,8 @@ if (!empty($_POST['roll_data'])) {
     details .cmp-label { font-size: 13px; }
     details .cmp-value { font-size: 14px; }
     details .calc-label { font-size: 13px; }
+    details .calc-sublabel { font-size: 11.5px; }
+    details .calc-formula { font-size: 11px; }
     details .calc-value { font-size: 14px; }
     details .calc-value.mono { font-size: 11.3px; }
     details .calc-step-num { font-size: 10.4px; }

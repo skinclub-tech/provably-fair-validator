@@ -165,9 +165,9 @@ check('regular result includes the collapsed calculation spoiler',
   && str_contains($regularOut, "calc-spoiler")
   && !str_contains($regularOut, "calc-spoiler' open"));
 check('regular spoiler maps key to client_seed-nonce and message to server_seed',
-  str_contains($regularOut, 'key = "client_seed-nonce", message = server_seed'));
+  str_contains($regularOut, 'HMAC-SHA512(key: &quot;' . $steps['message'] . '&quot;, message: ' . $regular['server_seed'] . ')'));
 check('regular spoiler public-hash step maps key to secret_salt and message to server_seed',
-  str_contains($regularOut, 'key = secret_salt, message = server_seed'));
+  str_contains($regularOut, 'HMAC-SHA256(key: ' . $regular['secret_salt'] . ', message: ' . $regular['server_seed'] . ')'));
 check('regular spoiler shows the reproducible full HMAC-SHA512 digest',
   str_contains($regularOut, $steps['hash']));
 check('regular spoiler shows the resulting public hash digest',
@@ -177,7 +177,7 @@ $battleSteps = rollSteps($battle['beacon'], $battle['client_seed'], (int)$battle
 check('battle result includes the calculation spoiler',
   str_contains($battleOut, "How this roll was calculated") && str_contains($battleOut, "calc-spoiler"));
 check('battle spoiler maps key to client_seed-nonce and message to beacon',
-  str_contains($battleOut, 'key = "client_seed-nonce", message = beacon'));
+  str_contains($battleOut, 'HMAC-SHA512(key: &quot;' . $battleSteps['message'] . '&quot;, message: ' . $battle['beacon'] . ')'));
 check('battle spoiler omits the public-hash section',
   !str_contains($battleOut, 'public hash'));
 
