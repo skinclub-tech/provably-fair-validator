@@ -1,36 +1,4 @@
 <?php
-/*
-Usage instruction:
-1. Authenticate on Repl.com and Fork this Repl (blue button on top right)
-2. Click "Run" on top of appeared page
-2. Copy JSON data from the "Check Roll" page on skin.club
-3. Enter the JSON in the form with label "Enter Your Roll Data"
-4. Click the "Check!" button
-5. See, whether the data is correct (it should!)
-
-OR
-1. Visit already running version of this Repl (https://skinclub-provably-fair-validator.replit.app/)
-
-If you would like just to test, how does this page work, here is your sample data:
-{
-  "server_seed": "c4ca4238a0b92382",
-  "secret_salt": "0dcc509a6f75849b",
-  "public_hash": "dc883b29588c1204fcad00984aaa2404c2251f9a0e5300106eb39aaebcc0f493",
-  "client_seed": "my_seed",
-  "nonce": "4",
-  "roll": "21752"
-}
-or, data for battles:
-{
-  "type": "battle",
-  "beacon": "Tt5qAdTwoTeygDdghVlfEWtNJQkGYg5q",
-  "client_seed": "12354,abgd",
-  "nonce": "9",
-  "roll": "5415"
-}
-*/
-
-# ------------------------------------------------------------- #
 
 define('ROLL_CHARS', 15);
 define('ROLL_MAX', 100000);
@@ -38,8 +6,6 @@ define('ROLL_MAX', 100000);
 if(PHP_INT_SIZE !== 8) {
   throw new Exception("Only 64-bit execution environment is supported");
 }
-
-# ------------------------------------------------------------- #
 
 /**
  * You can prove uniformness of this random function here: https://l.skin.club/pf-charts
@@ -50,7 +16,6 @@ function generateRoll(string $serverSeed, string $clientSeed, int $nonce): int
   $subHash = substr($hash, 0, ROLL_CHARS);
   $roll = hexdec($subHash) % ROLL_MAX;
 
-  // because we have [0; 99999] but need [1; 100000]
   return $roll + 1;
 }
 
@@ -58,8 +23,6 @@ function calculatePublicHash(string $secret, string $salt): string
 {
   return hash_hmac('sha256', $secret, $salt);
 }
-
-# ------------------------------------------------------------- #
 
 function checkRequiredProps(object $obj, array $props): bool
 {
@@ -72,42 +35,6 @@ function checkRequiredProps(object $obj, array $props): bool
   return true;
 }
 
-# ------------------------------------------------------------- #
-
-function callout(string $type, string $title, string $body): string
-{
-  $icons = [
-    'error'   => '&#9888;',
-    'warning' => '&#9888;',
-    'info'    => '&#8505;',
-  ];
-  $icon = $icons[$type] ?? '&#8505;';
-  return "<div class='callout callout-{$type}'>"
-       . "<span class='callout-icon'>{$icon}</span>"
-       . "<div class='callout-text'><strong>{$title}</strong>" . ($body ? "<span>{$body}</span>" : "") . "</div>"
-       . "</div>";
-}
-
-function comparisonCard(string $title, string $original, string $calculated, bool $match, bool $mono = false): string
-{
-  $valClass = $mono ? 'cmp-value mono' : 'cmp-value';
-  $o = htmlspecialchars($original);
-  $c = htmlspecialchars($calculated);
-
-  $verdict = $match
-    ? "<div class='verdict verdict-ok'><span class='verdict-icon'>&#10003;</span> They are identical &mdash; this is provably fair</div>"
-    : "<div class='verdict verdict-fail'><span class='verdict-icon'>&#10007;</span> They do not match &mdash; this result could not be verified</div>";
-
-  return "<div class='cmp-card'>"
-       . "<div class='cmp-title'>{$title}</div>"
-       . "<div class='cmp-row'><span class='cmp-label'>Provided by site</span><span class='{$valClass}'>{$o}</span></div>"
-       . "<div class='cmp-row'><span class='cmp-label'>Recalculated here</span><span class='{$valClass}'>{$c}</span></div>"
-       . $verdict
-       . "</div>";
-}
-
-# ------------------------------------------------------------- #
-
 function checkRegularRoll($data): string
 {
   $req = ['server_seed', 'secret_salt', 'public_hash', 'client_seed', 'nonce', 'roll'];
@@ -118,7 +45,6 @@ function checkRegularRoll($data): string
     return callout('warning', 'Server Seed is not yet revealed.', 'It is impossible to verify this roll right now &mdash; check back after the seed is revealed.');
   }
 
-  // data seems to be valid and we can proceed
   $originalRoll = (int)$data->roll;
   $calculatedRoll = generateRoll($data->server_seed, $data->client_seed, $data->nonce);
 
@@ -147,7 +73,6 @@ function checkBattleRoll($data): string
     return callout('warning', 'Beacon is not yet generated.', 'It is impossible to verify this roll right now &mdash; check back once the beacon is available.');
   }
 
-  // data seems to be valid and we can proceed
   $originalRoll = (int)$data->roll;
   $calculatedRoll = generateRoll($data->beacon, $data->client_seed, $data->nonce);
   $rollMatch = $originalRoll === $calculatedRoll;
@@ -158,6 +83,37 @@ function checkBattleRoll($data): string
 
   return $banner
        . comparisonCard('Roll number', (string)$originalRoll, (string)$calculatedRoll, $rollMatch);
+}
+
+function callout(string $type, string $title, string $body): string
+{
+  $icons = [
+    'error'   => '&#9888;',
+    'warning' => '&#9888;',
+    'info'    => '&#8505;',
+  ];
+  return "<div class='callout callout-{$type}'>"
+       . "<span class='callout-icon'>" . ($icons[$type] ?? '&#8505;') . "</span>"
+       . "<div class='callout-text'><strong>{$title}</strong>" . ($body ? "<span>{$body}</span>" : "") . "</div>"
+       . "</div>";
+}
+
+function comparisonCard(string $title, string $original, string $calculated, bool $match, bool $mono = false): string
+{
+  $valClass = $mono ? 'cmp-value mono' : 'cmp-value';
+  $o = htmlspecialchars($original);
+  $c = htmlspecialchars($calculated);
+
+  $verdict = $match
+    ? "<div class='verdict verdict-ok'><span class='verdict-icon'>&#10003;</span> They are identical &mdash; this is provably fair</div>"
+    : "<div class='verdict verdict-fail'><span class='verdict-icon'>&#10007;</span> They do not match &mdash; this result could not be verified</div>";
+
+  return "<div class='cmp-card'>"
+       . "<div class='cmp-title'>{$title}</div>"
+       . "<div class='cmp-row'><span class='cmp-label'>Provided by site</span><span class='{$valClass}'>{$o}</span></div>"
+       . "<div class='cmp-row'><span class='cmp-label'>Recalculated here</span><span class='{$valClass}'>{$c}</span></div>"
+       . $verdict
+       . "</div>";
 }
 
 $message = '';
