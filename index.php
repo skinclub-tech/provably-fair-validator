@@ -520,7 +520,7 @@ if (!empty($_POST['roll_data'])) {
 
     .detected-type {
       display: inline-block;
-      padding: 6px 12px; border-radius: 999px;
+      padding: 6px 12px; border-radius: var(--radius);
       background: rgba(123, 79, 255, .12); border: 1px solid var(--border);
       color: var(--muted); font-size: 14px;
     }
