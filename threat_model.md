@@ -2,25 +2,27 @@
 
 ## Project Overview
 
-This project is a small public PHP web app that lets users paste skin.club roll JSON and independently recompute the expected roll and, for regular rolls, the public hash. The production deployment is an autoscaled public web app with no database and no outbound API calls; the only server-side dynamic logic lives in `index.php` and the legacy public route `vanilla-checker.php`.
+This project is a small public PHP web app that lets users paste skin.club roll JSON and independently recompute the expected roll and, for regular rolls, the public hash. The production deployment is an autoscaled public web app with no database and no user authentication. The main dynamic logic lives in `index.php`, the legacy public route `vanilla-checker.php`, and `router.php`, which handles a few special routes and a fixed outbound fetch for a same-origin badge proxy.
 
 ## Assets
 
 - **Verification integrity** — users rely on the application to recompute the roll correctly and present trustworthy results. If attackers can alter the rendered result or script the page in the victim's browser, they can mislead users about fairness outcomes.
 - **User-supplied roll payloads** — pasted JSON can include server seeds, salts, beacons, and other roll data that users may reasonably expect to stay confined to the page they submitted.
 - **Deployment reputation and origin trust** — the app is hosted on public `roll.skin.club` / `roll.cs2.club` origins. Script execution on these origins would let an attacker present arbitrary trusted content to victims.
+- **Server-side outbound fetch capability** — `router.php` performs a server-side `curl` request for `/replit-badge.svg`. Even though the destination is hardcoded today, any future user influence over that fetch would create SSRF and content-trust risk.
 
 ## Trust Boundaries
 
 - **Browser to PHP application** — all request data (`$_POST`, headers, host) is untrusted and must not be rendered into HTML unsafely.
-- **Public internet to public routes** — both `index.php` and `vanilla-checker.php` are unauthenticated, production-reachable surfaces.
+- **Public internet to public routes** — `index.php`, `vanilla-checker.php`, and the special routes in `router.php` are unauthenticated, production-reachable surfaces.
 - **Server-side verification logic to rendered HTML** — computed results and echoed request values cross from data handling into browser-executed markup; output encoding must be context-appropriate.
-- **Request host to generated external link** — the current request host influences the computed logo destination in `index.php`, so host-derived values must be treated as attacker-controlled unless proven otherwise.
+- **Application to external badge source** — `/replit-badge.svg` crosses from the application to `replit.com` and then streams the returned body back to visitors. The fetch target must remain fixed and the returned content must stay safe in its embedding context.
+- **Request host to generated metadata** — request host values influence canonical and social metadata. Under the current public deployment, the edge rejects mismatched hosts, so host-header manipulation is not production-reachable unless deployment routing changes.
 
 ## Scan Anchors
 
-- **Production entry points:** `index.php`, `vanilla-checker.php`
-- **Highest-risk code areas:** POST handling, `json_decode`, HTML generation, any direct interpolation into response markup
+- **Production entry points:** `index.php`, `vanilla-checker.php`, `router.php`
+- **Highest-risk code areas:** POST handling, `json_decode`, HTML generation, any direct interpolation into response markup, and the `/replit-badge.svg` proxy path
 - **Public surface:** all application routes are public; there are no authenticated or admin-only areas
 - **Usually dev-only:** `tests/`, `scripts/`, `.devcontainer/` unless deployment wiring changes
 
@@ -40,4 +42,4 @@ Because the service is a public unauthenticated form endpoint, it must avoid exp
 
 ### Elevation of Privilege / Injection
 
-There is no account system, but browser-side code execution on the trusted deployment origin is still a meaningful security boundary failure. No user-controlled request field should be inserted into HTML without escaping, and no route should allow attacker input to become executable markup or script.
+There is no account system, but browser-side code execution on the trusted deployment origin is still a meaningful security boundary failure. No user-controlled request field should be inserted into HTML without escaping, and no route should allow attacker input to become executable markup or script. The fixed badge-proxy fetch must not become user-directed, or it would create a new SSRF and trust-boundary bypass.
