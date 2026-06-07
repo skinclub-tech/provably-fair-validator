@@ -284,7 +284,15 @@
     .footer-chip:focus-visible { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px rgba(123, 79, 255, .35); text-decoration: none; }
 
     @media (max-width: 520px) {
+      body { padding: 18px 18px 36px; }
+      .site-header { gap: 16px; }
       .site-header h1 { font-size: 1.25rem; }
+      .card { padding: 18px; }
+      .label-row { flex-direction: column; align-items: flex-start; }
+      .btn-sample { min-height: 44px; }
+      .actions { width: 100%; }
+      .btn-focus-end { width: 100%; margin-left: 0; }
+      .btn-primary { width: 100%; margin-left: 0; padding-left: 0; padding-right: 0; }
       .cmp-row { flex-direction: column; gap: 2px; }
       .cmp-value { text-align: left; }
     }
