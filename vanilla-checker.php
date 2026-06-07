@@ -106,7 +106,8 @@ function checkRegularRoll($data): string
   $originalPublicHash = $data->public_hash;
   $calculatedPublicHash = calculatePublicHash($data->server_seed, $data->secret_salt);
 
-  $message .= "<p class='info'>Original Public Hash is:<br><b>{$originalPublicHash}</b> <br> Valid Public Hash (for this Server Seed and Salt) is:<br><b>{$calculatedPublicHash}</b></p>";
+  $safeOriginalPublicHash = htmlspecialchars($originalPublicHash, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+  $message .= "<p class='info'>Original Public Hash is:<br><b>{$safeOriginalPublicHash}</b> <br> Valid Public Hash (for this Server Seed and Salt) is:<br><b>{$calculatedPublicHash}</b></p>";
 
   if ($originalPublicHash === $calculatedPublicHash) {
     $message .= "<p class='success'>And they are identical!</p>";
@@ -184,7 +185,7 @@ if (!empty($_POST['roll_data'])) {
   <div class="check-form">
     <form method="post" action="/">
       <label for="roll_data">Enter Your Roll Data:</label><br>
-      <textarea id="roll_data" rows="10" cols="60" name="roll_data"><?= $_POST['roll_data'] ?? '' ?></textarea>
+      <textarea id="roll_data" rows="10" cols="60" name="roll_data"><?= htmlspecialchars($_POST['roll_data'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></textarea>
       <button type="submit">Check!</button>
     </form>
   </div>
