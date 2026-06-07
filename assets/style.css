@@ -293,6 +293,24 @@
       .actions { width: 100%; }
       .btn-focus-end { width: 100%; margin-left: 0; }
       .btn-primary { width: 100%; margin-left: 0; padding-left: 0; padding-right: 0; }
-      .cmp-row { flex-direction: column; gap: 2px; }
-      .cmp-value { text-align: left; }
+      .result-header { gap: 8px; margin-bottom: 12px; }
+      .detected-type { font-size: 13px; }
+
+      .summary { padding: 14px; gap: 12px; }
+      .summary-icon { font-size: 1.2rem; width: 34px; height: 34px; }
+
+      .card code { overflow-wrap: anywhere; word-break: break-word; }
+
+      .cmp-card { padding: 14px; }
+      .cmp-row { flex-direction: column; gap: 3px; padding: 9px 0; }
+      .cmp-label { font-size: 12.5px; }
+      .cmp-value { text-align: left; overflow-wrap: anywhere; }
+      .verdict { font-size: .86rem; padding: 9px 11px; }
+
+      .calc-spoiler { padding: 0 14px; }
+      .calc-steps { gap: 14px; }
+      .calc-step { gap: 10px; }
+      .calc-formula { font-size: 11.5px; }
+      .calc-value.mono { font-size: 12px; }
+      details .calc-value.mono { font-size: 11px; }
     }
