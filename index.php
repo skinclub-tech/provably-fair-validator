@@ -360,6 +360,25 @@ $logoUrl = (substr_count($baseDomain, '.') >= 1 && stripos($baseDomain, 'replit'
   <meta name="theme-color" content="#7B4FFF">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%239B6FFF'/%3E%3Cstop%20offset='1'%20stop-color='%237B4FFF'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%230d0b1a'/%3E%3Cpath%20d='M32%208l18%207v12c0%2011-7.5%2019-18%2023C21.5%2046%2014%2038%2014%2027V15z'%20fill='url(%23g)'/%3E%3Cpath%20d='M26%2032l5%205%209-11'%20fill='none'%20stroke='%230d0b1a'%20stroke-width='4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
   <title>Provably Fair Validator &mdash; Verify your Rolls</title>
+  <?php
+  $pageUrl  = 'https://' . ($_SERVER['HTTP_HOST'] ?? 'provably-fair.skin.club') . '/';
+  $ogImage  = $pageUrl . 'assets/og-image.png';
+  $desc     = 'Verify skin.club roll data with an open-source provably fair validator that recalculates the roll and public hash from the pasted JSON.';
+  $descShort = 'Verify skin.club roll data with an open-source provably fair validator.';
+  ?>
+  <meta name="description" content="<?= htmlspecialchars($desc) ?>">
+  <link rel="canonical" href="<?= htmlspecialchars($pageUrl) ?>">
+  <meta property="og:title" content="Provably Fair Validator">
+  <meta property="og:description" content="<?= htmlspecialchars($descShort) ?>">
+  <meta property="og:url" content="<?= htmlspecialchars($pageUrl) ?>">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="<?= htmlspecialchars($ogImage) ?>">
+  <meta property="og:site_name" content="Provably Fair Validator">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Provably Fair Validator">
+  <meta name="twitter:description" content="<?= htmlspecialchars($descShort) ?>">
+  <meta name="twitter:image" content="<?= htmlspecialchars($ogImage) ?>">
   <link rel="preload" href="assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/style.css">
 </head>
