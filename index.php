@@ -7,12 +7,6 @@ if(PHP_INT_SIZE !== 8) {
   throw new Exception("Only 64-bit execution environment is supported");
 }
 
-// Opt the page out of Cross-Origin-Embedder-Policy enforcement so cross-origin
-// subresources (e.g. the "Run on Replit" badge) that lack a CORP header are not
-// blocked with ERR_BLOCKED_BY_RESPONSE.NotSameOrigin.
-if(!headers_sent()) {
-  header('Cross-Origin-Embedder-Policy: unsafe-none');
-}
 
 /**
  * You can prove uniformness of this random function here: https://l.skin.club/pf-charts
@@ -464,7 +458,7 @@ if($baseDomain !== 'skin.club' && !headers_sent()) {
 
     <div class="footer">
       <div class="footer-links">
-        <a href="https://replit.com/github/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener"><img src="https://replit.com/badge/github/skinclub-tech/provably-fair-validator" alt="Run on Replit"></a>
+        <a href="https://replit.com/github/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener"><img src="replit-badge.svg" alt="Run on Replit"></a>
         <a class="footer-chip" href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener" rel="nofollow">Source Code</a>
         <a class="footer-chip" href="vanilla-checker.php" rel="nofollow">Old style view</a>
       </div>

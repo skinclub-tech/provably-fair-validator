@@ -16,6 +16,33 @@ if ($path === '/llms.txt') {
   }
 }
 
+if ($path === '/replit-badge.svg') {
+  // Proxy the "Run on Replit" badge through our own origin. Replit's CDN
+  // returns the SVG to server-side requests but blocks browser-originated,
+  // cross-origin fetches, so we fetch it here and stream it back same-origin.
+  $ch = curl_init('https://replit.com/badge/github/skinclub-tech/provably-fair-validator');
+  curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_CONNECTTIMEOUT => 3,
+    CURLOPT_TIMEOUT => 5,
+    CURLOPT_USERAGENT => 'provably-fair-validator badge proxy',
+  ]);
+  $body = curl_exec($ch);
+  $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  curl_close($ch);
+
+  if ($body === false || $status !== 200) {
+    http_response_code(502);
+    exit;
+  }
+
+  header('Content-Type: image/svg+xml');
+  header('Cache-Control: public, max-age=86400');
+  echo $body;
+  exit;
+}
+
 if ($path === '/robots.txt') {
   $host = strtolower(preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? ''));
   http_response_code(200);
