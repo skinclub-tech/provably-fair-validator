@@ -9,6 +9,10 @@
 - Authenticated pages (none present in this repository)
 - Internal development and test files
 
+## Canonical host
+- `roll.skin.club` is the intended crawlable/indexable origin
+- Alternate hosts may exist for deployment or legacy access, but they should consolidate to the canonical host rather than compete with it
+
 ## Target audience
 - skin.club users who want to independently verify roll fairness
 - People searching for a provably fair validator or roll verification tool
