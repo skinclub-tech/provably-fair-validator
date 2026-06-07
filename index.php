@@ -358,7 +358,7 @@ $logoUrl = (substr_count($baseDomain, '.') >= 1 && stripos($baseDomain, 'replit'
   ? 'https://' . $baseDomain
   : 'https://skin.club';
 
-if($baseDomain !== 'roll.skin.club' && !headers_sent()) {
+if($baseDomain !== 'skin.club' && !headers_sent()) {
   header('X-Robots-Tag: noindex, nofollow');
 }
 
