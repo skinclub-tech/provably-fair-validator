@@ -7,6 +7,13 @@ if(PHP_INT_SIZE !== 8) {
   throw new Exception("Only 64-bit execution environment is supported");
 }
 
+// Opt the page out of Cross-Origin-Embedder-Policy enforcement so cross-origin
+// subresources (e.g. the "Run on Replit" badge) that lack a CORP header are not
+// blocked with ERR_BLOCKED_BY_RESPONSE.NotSameOrigin.
+if(!headers_sent()) {
+  header('Cross-Origin-Embedder-Policy: unsafe-none');
+}
+
 /**
  * You can prove uniformness of this random function here: https://l.skin.club/pf-charts
  */
