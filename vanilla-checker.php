@@ -153,11 +153,18 @@ if (!empty($_POST['roll_data'])) {
   }
 }
 
+// Canonicalize to the homepage on the same host so this legacy view does not
+// compete with "/" for search indexing (mirrors index.php's canonical).
+$defaultDomain = 'provably-fair-validator.replit.app';
+$canonicalUrl = 'https://' . ($_SERVER['HTTP_HOST'] ?? $defaultDomain) . '/';
+
 ?>
 
 <html>
 <head>
   <title>Verify your Rolls</title>
+  <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES) ?>">
+  <meta name="robots" content="noindex,follow">
   <style>
   body {
     margin: 0;

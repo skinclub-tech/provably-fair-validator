@@ -461,8 +461,8 @@ $logoUrl = (substr_count($baseDomain, '.') >= 1 && stripos($baseDomain, 'replit'
     <div class="footer">
       <div class="footer-links">
         <a href="https://replit.com/github/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener"><img src="https://replit.com/badge/github/skinclub-tech/provably-fair-validator" alt="Run on Replit"></a>
-        <a class="footer-chip" href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener">Source Code</a>
-        <a class="footer-chip" href="vanilla-checker.php">Old style view</a>
+        <a class="footer-chip" href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener" rel="nofollow">Source Code</a>
+        <a class="footer-chip" href="vanilla-checker.php" rel="nofollow">Old style view</a>
       </div>
     </div>
 
