@@ -27,7 +27,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "php -S 0.0.0.0:8080 -t ."
+args = "php -S 0.0.0.0:8080 -t . router.php"
 waitForPort = 8080
 
 [workflows.workflow.metadata]
