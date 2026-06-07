@@ -9,7 +9,7 @@ channel = "stable-25_05"
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["php", "-S", "0.0.0.0:8080", "-t", "."]
+run = ["php", "-S", "0.0.0.0:8080", "-t", ".", "router.php"]
 
 [[ports]]
 localPort = 8080

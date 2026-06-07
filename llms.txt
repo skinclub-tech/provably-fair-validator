@@ -1,0 +1,8 @@
+# Provably Fair Validator
+
+> An open-source tool that lets skin.club users independently verify that their rolls were generated fairly. Paste the JSON roll data from skin.club's "Check Roll" page and the app re-computes the roll — and the public hash for regular rolls — to confirm it matches.
+
+## Links
+
+- [Homepage](https://roll.skin.club/): The validator UI — paste roll JSON, get instant verification.
+- [GitHub repository](https://github.com/skinclub-tech/provably-fair-validator): Full source code, open for public audit.
