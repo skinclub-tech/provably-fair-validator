@@ -458,7 +458,7 @@ if($baseDomain !== 'skin.club' && !headers_sent()) {
 
     <div class="footer">
       <div class="footer-links">
-        <a href="https://replit.com/github/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener"><img src="replit-badge.svg" alt="Run on Replit"></a>
+        <a href="https://replit.com/github/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener"><img src="assets/replit-badge.svg" alt="Run on Replit"></a>
         <a class="footer-chip" href="https://github.com/skinclub-tech/provably-fair-validator" target="_blank" rel="noopener" rel="nofollow">Source Code</a>
         <a class="footer-chip" href="vanilla-checker.php" rel="nofollow">Old style view</a>
       </div>
