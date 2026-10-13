@@ -314,8 +314,9 @@ function detectRollType(object $input): ?string
   return null;
 }
 
-function verifyRollData(string $json, ?string &$detectedType = null): string
+function verifyRollData(string $json, ?string &$detectedType = null, ?array &$analytics = null): string
 {
+  $analytics = ['roll_type' => 'unknown', 'outcome' => 'invalid_input'];
   $input = json_decode($json);
   if ($input === null) {
     return callout('error', 'That is not valid JSON.', 'Make sure you copied the entire block, including the curly braces { }.');
@@ -328,19 +329,25 @@ function verifyRollData(string $json, ?string &$detectedType = null): string
   // declared "type" field when the payload is ambiguous.
   $type = detectRollType($input) ?? ($input->type ?? 'regular');
 
-  if ($type === 'regular') {
-    return checkRegularRoll($input, $detectedType);
-  }
-  if ($type === 'battle') {
-    return checkBattleRoll($input, $detectedType);
+  if ($type === 'regular' || $type === 'battle') {
+    $analytics['roll_type'] = $type;
+    $result = $type === 'regular'
+      ? checkRegularRoll($input, $detectedType)
+      : checkBattleRoll($input, $detectedType);
+    // Only fixed categories are exposed to analytics, never submitted values.
+    $analytics['outcome'] = str_contains($result, 'summary-ok') ? 'verified'
+      : (str_contains($result, 'summary-fail') ? 'mismatch'
+      : (str_contains($result, 'callout-warning') ? 'not_revealed' : 'invalid_input'));
+    return $result;
   }
   return callout('error', 'Unknown roll type supplied.', 'The "type" field must be either "regular" or "battle".');
 }
 
 $message = '';
 $detectedType = '';
+$verificationAnalytics = null;
 if (!empty($_POST['roll_data'])) {
-  $message = verifyRollData($_POST['roll_data'], $detectedType);
+  $message = verifyRollData($_POST['roll_data'], $detectedType, $verificationAnalytics);
 }
 
 // Derive the logo's base domain from the current request host by stripping the
@@ -401,7 +408,7 @@ if($baseDomain !== 'skin.club' && !headers_sent()) {
     </header>
 
     <?php if ($message): ?>
-    <section class="card results" id="results">
+    <section class="card results" id="results" data-verification-event="<?= htmlspecialchars(json_encode($verificationAnalytics), ENT_QUOTES, 'UTF-8') ?>">
       <div class="result-header">
         <h2>Verification result</h2>
         <?php if ($detectedType): ?><?= $detectedType ?><?php endif; ?>

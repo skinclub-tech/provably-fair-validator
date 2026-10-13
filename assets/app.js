@@ -1,3 +1,13 @@
+function trackEvent(name, data) {
+  try {
+    const pending = window.umami?.track(name, data);
+    // Some trackers return a promise; rejected requests must not affect the UI.
+    if (pending && typeof pending.catch === 'function') pending.catch(() => {});
+  } catch {
+    // Analytics must never break verification.
+  }
+}
+
 const SAMPLES = {
   regular: {
     client_seed: "my_seed",
@@ -25,8 +35,21 @@ function loadSample(kind) {
   ta.value = JSON.stringify(SAMPLES[kind], null, 2);
   autoSize(ta);
   ta.focus();
+  trackEvent('sample_selected', { roll_type: kind });
 }
 document.addEventListener('DOMContentLoaded', () => {
+  const results = document.getElementById('results');
+  if (results?.dataset.verificationEvent) {
+    try {
+      const event = JSON.parse(results.dataset.verificationEvent);
+      trackEvent('verification_completed', {
+        roll_type: event.roll_type,
+        outcome: event.outcome
+      });
+    } catch {
+      // Ignore missing or malformed analytics metadata.
+    }
+  }
   const ta = document.getElementById('roll_data');
   if (!ta) return;
   autoSize(ta);
@@ -44,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
     const btn = form.querySelector('button[type="submit"]');
     form.addEventListener('submit', () => {
+      trackEvent('verification_submitted');
       if (!btn) return;
       btn.textContent = 'Checking…';
       btn.disabled = true;
