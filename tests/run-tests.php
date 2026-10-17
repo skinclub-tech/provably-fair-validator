@@ -29,7 +29,8 @@ function check(string $name, bool $cond): void
   }
 }
 
-// Documented sample payloads used as fixtures (mirrors the in-page samples).
+// Synthetic fixtures with known results (older format with string nonce/roll).
+// Real data copied from the site is covered at the end of this file.
 $regular = [
   'server_seed' => 'c4ca4238a0b92382',
   'secret_salt' => '0dcc509a6f75849b',
@@ -223,6 +224,79 @@ $regularUnknownType = $regular;
 $regularUnknownType['type'] = 'lottery';
 check('regular data with an unknown type still verifies',
   str_contains(verifyRollData(json_encode($regularUnknownType)), 'summary-ok'));
+
+echo "Integration: site data formats (mock values)\n";
+
+// Mock data in the formats the site produces; the in-page samples in
+// assets/app.js use the same values. Never put real roll data here.
+$siteBattle = '{"type":"battle","beacon":"11TD1na4qZZonViCx9NbqbQ1cyiVtQ51","client_seed":"my_seed,player_2,player_3,player_4","nonce":3,"roll":81575}';
+$siteRegular = '{"client_seed":"my_seed","server_seed":"0d2ade1251ce04077d6020a5fb081c36","secret_salt":"b07bbd68cf0ba687","public_hash":"924ef42387a290388c5258d00660a7885cb27e3a7bd15bacee2f0242d9615b77","nonce":7,"roll":10477,"created_at":"2026-01-01 12:00:00"}';
+$siteRegularReordered = '{"server_seed":"0d2ade1251ce04077d6020a5fb081c36","secret_salt":"b07bbd68cf0ba687","public_hash":"924ef42387a290388c5258d00660a7885cb27e3a7bd15bacee2f0242d9615b77","client_seed":"my_seed","nonce":6,"roll":89384}';
+check('copy-button battle data with numeric nonce and roll verifies', str_contains(verifyRollData($siteBattle), 'summary-ok'));
+check('copy-button regular data with created_at verifies', str_contains(verifyRollData($siteRegular), 'summary-ok'));
+check('regular data in the other field order verifies', str_contains(verifyRollData($siteRegularReordered), 'summary-ok'));
+
+// Selecting the roll details on the site copies one pair per line, no commas.
+$siteUnrevealed = <<<'TXT'
+{
+
+"client_seed": "my_seed"
+
+"server_seed": "**********************"
+
+"secret_salt": "********************************"
+
+"public_hash": "924ef42387a290388c5258d00660a7885cb27e3a7bd15bacee2f0242d9615b77"
+
+"nonce": "7"
+
+"roll": "10477"
+
+"created_at": "2026-01-01 12:00:00"
+
+}
+TXT;
+$siteUnrevealedOut = verifyRollData($siteUnrevealed);
+check('comma-less unrevealed data shows the not-revealed warning',
+  str_contains($siteUnrevealedOut, 'callout-warning') && str_contains($siteUnrevealedOut, 'not yet revealed'));
+$siteRevealed = str_replace(
+  ['"**********************"', '"********************************"'],
+  ['"0d2ade1251ce04077d6020a5fb081c36"', '"b07bbd68cf0ba687"'],
+  $siteUnrevealed);
+check('comma-less revealed data verifies', str_contains(verifyRollData($siteRevealed), 'summary-ok'));
+check('comma-less data with Windows line endings verifies',
+  str_contains(verifyRollData(str_replace("\n", "\r\n", $siteRevealed)), 'summary-ok'));
+$compactNoCommas = "{\n\"server_seed\": \"0d2ade1251ce04077d6020a5fb081c36\"\n\"secret_salt\": \"b07bbd68cf0ba687\"\n"
+  . "\"public_hash\": \"924ef42387a290388c5258d00660a7885cb27e3a7bd15bacee2f0242d9615b77\"\n\"client_seed\": \"my_seed\"\n\"nonce\": 6\n\"roll\": 89384\n}";
+check('comma-less data with numeric values verifies', str_contains(verifyRollData($compactNoCommas), 'summary-ok'));
+
+echo "Integration: invalid JSON messages\n";
+check('cut-off data asks for the whole block with braces',
+  str_contains(verifyRollData('{"server_seed": "abc"'), 'including the curly braces'));
+check('curly quotes are named in the error',
+  str_contains(verifyRollData("{\u{201C}server_seed\u{201D}: \u{201C}abc\u{201D}}"), 'curly quotes'));
+check('other broken JSON asks to copy again without editing',
+  str_contains(verifyRollData("{'server_seed': 'abc'}"), 'without editing'));
+
+echo "Integration: page rendering\n";
+
+/** Render index.php in a separate PHP process with the given POST fields. */
+function renderPage(array $post): string
+{
+  $bootstrap = '$_SERVER["REQUEST_METHOD"] = "POST"; $_POST = json_decode($argv[1], true); require $argv[2];';
+  $command = escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($bootstrap) . ' '
+    . escapeshellarg(json_encode($post)) . ' ' . escapeshellarg(__DIR__ . '/../index.php') . ' 2>&1';
+  return (string)shell_exec($command);
+}
+
+$arrayPage = renderPage(['roll_data' => ['x']]);
+check('array roll_data renders the full page without a fatal error',
+  str_contains($arrayPage, '</html>') && !str_contains($arrayPage, 'Fatal error'));
+$unrevealedPage = renderPage(['roll_data' => $siteUnrevealed]);
+check('comma-less data renders the warning and keeps the pasted text',
+  str_contains($unrevealedPage, 'not yet revealed') && str_contains($unrevealedPage, '&quot;created_at&quot;: &quot;2026-01-01 12:00:00&quot;'));
+check('comma-less data is reported to analytics as missing_commas',
+  str_contains($unrevealedPage, '&quot;input_format&quot;:&quot;missing_commas&quot;'));
 
 echo "\n{$passed} passed, {$failed} failed\n";
 exit($failed === 0 ? 0 : 1);

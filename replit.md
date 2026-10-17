@@ -14,6 +14,10 @@ Users paste the JSON roll data from skin.club's "Check Roll" page and the app re
     chars → decimal → `mod 100000 + 1`.
   - Public hash = `HMAC-SHA256(server_seed, secret_salt)`.
   - Supports both `regular` and `battle` roll types.
+  - Input formats from the site: the copy button gives compact JSON with numeric
+    `nonce`/`roll`; selecting the roll details gives one `"key": "value"` pair per
+    line with no commas (values are strings, unrevealed seeds are `****`). Both
+    must keep working; the parser restores missing commas.
 - **Deployment:** Autoscale, port 8080 mapped to external 80.
 - **GitHub repo:** https://github.com/skinclub-tech/provably-fair-validator (public).
 
@@ -29,3 +33,4 @@ Users paste the JSON roll data from skin.club's "Check Roll" page and the app re
 ## User preferences
 - Never edit or delete the `vanilla-checker.php` file.
 - Republish (deploy) the app after each iteration, without needing to be asked each time.
+- Never use real roll data in samples, docs, or tests — use mock values only.

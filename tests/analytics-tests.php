@@ -74,7 +74,10 @@ $without = function (array $base, array $keys) {
 };
 
 echo "Analytics: successful and unrevealed outcomes\n";
-expectResult('regular verified', json_encode($regular), 'regular', 'verified', 'all_match');
+expectResult('regular verified', json_encode($regular), 'regular', 'verified', 'all_match', ['input_format' => 'json']);
+$commaLess = "{\n\n\"server_seed\": \"*****\"\n\n\"secret_salt\": \"*****\"\n\n\"public_hash\": \"{$regular['public_hash']}\"\n\n"
+  . "\"client_seed\": \"my_seed\"\n\n\"nonce\": \"4\"\n\n\"roll\": \"21752\"\n\n}";
+expectResult('comma-less data', $commaLess, 'regular', 'not_revealed', 'seed_not_revealed', ['input_format' => 'missing_commas']);
 expectResult('battle verified', json_encode($battle), 'battle', 'verified', 'all_match');
 expectResult('decimal nonce keeps working', $with($battle, ['nonce' => '9.0']), 'battle', 'verified', 'all_match');
 expectResult('regular seed hidden', $with($regular, ['server_seed' => '*hidden*']), 'regular', 'not_revealed', 'seed_not_revealed');
@@ -97,8 +100,9 @@ expectResult('battle mismatch', $with($battle, ['roll' => '1']), 'battle', 'mism
   ['has_whitespace' => false, 'roll_not_integer' => false]);
 
 echo "Analytics: invalid input reasons\n";
-expectResult('truncated JSON', '{"server_seed": "abc"', 'unknown', 'invalid_input', 'invalid_json',
+$truncated = expectResult('truncated JSON', '{"server_seed": "abc"', 'unknown', 'invalid_input', 'invalid_json',
   ['starts_with_brace' => true, 'ends_with_brace' => false, 'has_smart_quotes' => false, 'length_bucket' => 'under_100']);
+check('truncated JSON: no input_format', !array_key_exists('input_format', $truncated));
 expectResult('smart quotes', "{\u{201C}server_seed\u{201D}: \u{201C}abc\u{201D}}", 'unknown', 'invalid_input', 'invalid_json',
   ['has_smart_quotes' => true, 'ends_with_brace' => true]);
 expectResult('JSON array', '[1, 2]', 'unknown', 'invalid_input', 'not_object');

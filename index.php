@@ -189,6 +189,49 @@ function jsonFormatHints(string $json): array
   ];
 }
 
+/**
+ * Decode pasted roll data. Selecting and copying the roll details on the site
+ * drops the commas between fields (one "key": "value" pair per line), so when
+ * the text is not valid JSON, retry once with those commas restored.
+ * Returns [decoded value or null, input format code for analytics].
+ */
+function decodeRollJson(string $json): array
+{
+  $input = json_decode($json);
+  if ($input !== null) {
+    return [$input, 'json'];
+  }
+  // Real roll data is a few hundred bytes; skip the repair for huge input.
+  if (strlen($json) <= 20000) {
+    $repaired = preg_replace('/(["\d\]}]|true|false|null)(\s*\R\s*)(?="[^"\r\n]*"\s*:)/', '$1,$2', $json);
+    if ($repaired !== null && $repaired !== $json) {
+      $input = json_decode($repaired);
+      if ($input !== null) {
+        return [$input, 'missing_commas'];
+      }
+    }
+  }
+
+  return [null, null];
+}
+
+/**
+ * Explain why the pasted text could not be read, using the same structural
+ * hints that are sent to analytics.
+ */
+function invalidJsonError(array $hints): string
+{
+  if (!$hints['starts_with_brace'] || !$hints['ends_with_brace']) {
+    $body = 'Make sure you copied the entire block, including the curly braces { }.';
+  } elseif ($hints['has_smart_quotes']) {
+    $body = 'It contains curly quotes (&ldquo; &rdquo;), which usually appear when text passes through a chat app or text editor. Copy the data directly from the site and paste it here.';
+  } else {
+    $body = 'The text may have been changed after copying. Copy the data from the site again and paste it here without editing.';
+  }
+
+  return callout('error', 'That is not valid JSON.', $body);
+}
+
 function missingFieldsError(array $missing): string
 {
   $names = implode(', ', array_map(fn($f) => "<code>{$f}</code>", $missing));
@@ -421,11 +464,13 @@ function detectRollType(object $input): ?string
 function verifyRollData(string $json, ?string &$detectedType = null, ?array &$analytics = null): string
 {
   $analytics = ['roll_type' => 'unknown'];
-  $input = json_decode($json);
+  [$input, $inputFormat] = decodeRollJson($json);
   if ($input === null) {
-    recordAnalytics($analytics, 'invalid_input', 'invalid_json', jsonFormatHints($json));
-    return callout('error', 'That is not valid JSON.', 'Make sure you copied the entire block, including the curly braces { }.');
+    $hints = jsonFormatHints($json);
+    recordAnalytics($analytics, 'invalid_input', 'invalid_json', $hints);
+    return invalidJsonError($hints);
   }
+  $analytics['input_format'] = $inputFormat;
   if (!is_object($input)) {
     recordAnalytics($analytics, 'invalid_input', 'not_object');
     return callout('error', 'Your input is invalid.', 'Copy the full JSON string from the site and paste it here.');
@@ -544,7 +589,7 @@ if($baseDomain !== 'skin.club' && !headers_sent()) {
   "nonce": "...",
   "roll": "...",
   "created_at": "..."
-}'><?= htmlspecialchars($_POST['roll_data'] ?? '') ?></textarea>
+}'><?= htmlspecialchars(is_string($submittedRollData) ? $submittedRollData : '') ?></textarea>
 
         <div class="actions">
           <span class="btn-focus btn-focus-end"><button type="submit" class="btn btn-primary">Check</button></span>
@@ -559,15 +604,19 @@ if($baseDomain !== 'skin.club' && !headers_sent()) {
         <summary>Here&rsquo;s what each field means</summary>
         <dl>
           <dt><code>server_seed</code> / <code>beacon</code></dt>
-          <dd>The secret value (revealed afterwards) that drives the random roll.</dd>
+          <dd>The secret value (revealed afterwards) that drives the random roll. Until it is available, the site shows asterisks (<code>****</code>) instead.</dd>
+          <dt><code>secret_salt</code></dt>
+          <dd>Revealed together with the server seed and used as the key for the public hash.</dd>
           <dt><code>client_seed</code></dt>
-          <dd>Your own seed, mixed in so neither side can predict the outcome alone.</dd>
+          <dd>Your own seed, mixed in so neither side can predict the outcome alone. In battles, it lists the client seeds of all participants, separated by commas.</dd>
           <dt><code>nonce</code></dt>
           <dd>A counter that makes every roll with the same seeds unique.</dd>
           <dt><code>public_hash</code></dt>
           <dd>A fingerprint published <em>before</em> the roll, proving the seed wasn&rsquo;t changed later.</dd>
           <dt><code>roll</code></dt>
           <dd>The result the site claims &mdash; we recalculate it to confirm.</dd>
+          <dt><code>created_at</code></dt>
+          <dd>When the roll was made. It is not used in the calculation.</dd>
         </dl>
       </details>
     </section>

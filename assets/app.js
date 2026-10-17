@@ -61,22 +61,24 @@ function verificationEventData(raw) {
   return data;
 }
 
+// Mock roll data in the format the site's copy button produces. Never use
+// real roll data here.
 const SAMPLES = {
   regular: {
     client_seed: "my_seed",
-    server_seed: "c4ca4238a0b92382",
-    secret_salt: "0dcc509a6f75849b",
-    public_hash: "dc883b29588c1204fcad00984aaa2404c2251f9a0e5300106eb39aaebcc0f493",
-    nonce: "4",
-    roll: "21752",
-    created_at: "2024-01-01 00:00:00"
+    server_seed: "0d2ade1251ce04077d6020a5fb081c36",
+    secret_salt: "b07bbd68cf0ba687",
+    public_hash: "924ef42387a290388c5258d00660a7885cb27e3a7bd15bacee2f0242d9615b77",
+    nonce: 7,
+    roll: 10477,
+    created_at: "2026-01-01 12:00:00"
   },
   battle: {
     type: "battle",
-    beacon: "Tt5qAdTwoTeygDdghVlfEWtNJQkGYg5q",
-    client_seed: "12354,abgd",
-    nonce: "9",
-    roll: "5415"
+    beacon: "11TD1na4qZZonViCx9NbqbQ1cyiVtQ51",
+    client_seed: "my_seed,player_2,player_3,player_4",
+    nonce: 3,
+    roll: 81575
   }
 };
 function autoSize(ta) {
