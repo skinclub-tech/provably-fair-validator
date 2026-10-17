@@ -3,4 +3,5 @@
 - [clip-path focus rings](clip-path-focus-rings.md) — clip-path clips outline/box-shadow/drop-shadow focus rings; wrap the button and ring the unclipped wrapper via :has(:focus-visible).
 - [Analytics tracker timing](analytics-tracker-timing.md) — injected tracker loads async; events fired on page load can be dropped, so queue them.
 - [Input handling decisions](input-handling-decisions.md) — more auto-fixes wait for analytics data; not-revealed message stays; display_errors untouched.
+- [Rewriting unpushed git history](git-history-rewrite.md) — rewrite only main; replit-agent, agent-ledger and gitsafe-backup refs are Replit checkpoint records, never pushed.
 - [php -S blocking I/O](php-builtin-server-blocking.md) — `php -S` is single-threaded; never do blocking outbound calls in the request path (it starves health checks → outages). Serve third-party assets as local static files.
