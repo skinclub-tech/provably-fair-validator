@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "HXPTBh7xPDaiR6mkautkX"
+uri = "file://.local/outputs/weekly-analytics.chart.html"
+type = "text"
+title = "Verification submissions lead tracked activity"
+description = "Custom event activity over the past seven days."
+logical_id = "38a9c212-0697-406c-b814-10f72a91dcd4"
+content_hash = "sha256:f4699cfb09b21143499e158bb65122eda33f22e78274e8a2f6011135e0c51329"
+size = 2970
+mtime_ms = 1792252250455
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:4be0a1cd-8582-470d-ba7a-0aa952bb2947/38a9c212-0697-406c-b814-10f72a91dcd4/c58dd5ac-4675-485a-b7dc-08b447f3def8"
+storage_version_token = "1792252251226077"
+content_type = "text/html;profile=replit-chart"
