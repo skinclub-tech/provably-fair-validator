@@ -1,11 +1,64 @@
-function trackEvent(name, data) {
+// The analytics script is injected asynchronously after this file, so events
+// fired during page load are queued until it is ready instead of being lost.
+const ANALYTICS_WAIT_MS = 10000;
+const ANALYTICS_POLL_MS = 200;
+const ANALYTICS_QUEUE_LIMIT = 20;
+const analyticsQueue = [];
+let analyticsTimer = null;
+
+function analyticsReady() {
+  return typeof window.umami?.track === 'function';
+}
+
+function sendEvent(name, data) {
   try {
-    const pending = window.umami?.track(name, data);
+    const pending = window.umami.track(name, data);
     // Some trackers return a promise; rejected requests must not affect the UI.
     if (pending && typeof pending.catch === 'function') pending.catch(() => {});
   } catch {
     // Analytics must never break verification.
   }
+}
+
+function flushAnalytics() {
+  while (analyticsQueue.length) {
+    const [name, data] = analyticsQueue.shift();
+    sendEvent(name, data);
+  }
+}
+
+function trackEvent(name, data) {
+  if (analyticsReady() && analyticsQueue.length === 0) {
+    sendEvent(name, data);
+    return;
+  }
+  if (analyticsQueue.length >= ANALYTICS_QUEUE_LIMIT) return;
+  analyticsQueue.push([name, data]);
+  if (analyticsTimer) return;
+
+  const startedAt = Date.now();
+  analyticsTimer = setInterval(() => {
+    if (analyticsReady()) {
+      flushAnalytics();
+    } else if (Date.now() - startedAt < ANALYTICS_WAIT_MS) {
+      return;
+    } else {
+      // Analytics is disabled or blocked (e.g. in development): drop the queue.
+      analyticsQueue.length = 0;
+    }
+    clearInterval(analyticsTimer);
+    analyticsTimer = null;
+  }, ANALYTICS_POLL_MS);
+}
+
+// Forward only flat values from the server-rendered verification metadata.
+function verificationEventData(raw) {
+  const event = JSON.parse(raw);
+  const data = {};
+  for (const [key, value] of Object.entries(event)) {
+    if (['string', 'number', 'boolean'].includes(typeof value)) data[key] = value;
+  }
+  return data;
 }
 
 const SAMPLES = {
@@ -38,16 +91,12 @@ function loadSample(kind) {
   trackEvent('sample_selected', { roll_type: kind });
 }
 document.addEventListener('DOMContentLoaded', () => {
-  const results = document.getElementById('results');
-  if (results?.dataset.verificationEvent) {
+  const rawVerificationEvent = document.body.dataset.verificationEvent;
+  if (rawVerificationEvent) {
     try {
-      const event = JSON.parse(results.dataset.verificationEvent);
-      trackEvent('verification_completed', {
-        roll_type: event.roll_type,
-        outcome: event.outcome
-      });
+      trackEvent('verification_completed', verificationEventData(rawVerificationEvent));
     } catch {
-      // Ignore missing or malformed analytics metadata.
+      // Ignore malformed analytics metadata.
     }
   }
   const ta = document.getElementById('roll_data');

@@ -98,12 +98,95 @@ function missingRequiredProps(object $obj, array $props): array
 {
   $missing = [];
   foreach($props as $prop) {
-    if(!isset($obj->$prop) || trim((string)$obj->$prop) === '') {
+    // Nested values are reported separately by invalidFieldTypes().
+    if(!isset($obj->$prop) || (is_scalar($obj->$prop) && trim((string)$obj->$prop) === '')) {
       $missing[] = $prop;
     }
   }
 
   return $missing;
+}
+
+/**
+ * Required fields must hold plain values; nested arrays/objects used to crash
+ * the verification with a fatal error instead of showing a message.
+ */
+function invalidFieldTypes(object $obj, array $props): array
+{
+  return array_values(array_filter($props, fn($prop) => isset($obj->$prop) && !is_scalar($obj->$prop)));
+}
+
+/**
+ * Store a verification outcome for analytics. Only fixed codes, booleans and
+ * schema field names may be added here -- never values from the pasted JSON.
+ */
+function recordAnalytics(?array &$analytics, string $outcome, string $reason, array $details = []): void
+{
+  $analytics = array_merge($analytics ?? [], ['outcome' => $outcome, 'reason' => $reason], $details);
+}
+
+/**
+ * Shared field checks for both roll types. Returns an error callout, or null
+ * when the payload can be verified.
+ */
+function validateRequiredFields(object $data, array $req, ?array &$analytics): ?string
+{
+  $missing = missingRequiredProps($data, $req);
+  if ($missing) {
+    recordAnalytics($analytics, 'invalid_input', 'missing_fields', ['missing_fields' => implode(',', $missing)]);
+    return missingFieldsError($missing);
+  }
+
+  $invalid = invalidFieldTypes($data, $req);
+  if ($invalid) {
+    recordAnalytics($analytics, 'invalid_input', 'invalid_field_types', ['invalid_fields' => implode(',', $invalid)]);
+    $names = implode(', ', array_map(fn($f) => "<code>{$f}</code>", $invalid));
+    $label = count($invalid) === 1 ? 'field must be' : 'fields must be';
+    return callout('error', 'Your input is invalid.', "The following {$label} text or a number: {$names}. Copy the full JSON string from the site and paste it here.");
+  }
+
+  if (!is_numeric($data->nonce)) {
+    recordAnalytics($analytics, 'invalid_input', 'invalid_nonce');
+    return callout('error', 'Your input is invalid.', 'The <code>nonce</code> field must be a number. Copy the full JSON string from the site and paste it here.');
+  }
+
+  return null;
+}
+
+/**
+ * Formatting signals that help explain mismatches without exposing values.
+ */
+function mismatchHints(object $data, array $fields): array
+{
+  $hasWhitespace = false;
+  foreach ($fields as $field) {
+    if (is_string($data->$field) && trim($data->$field) !== $data->$field) {
+      $hasWhitespace = true;
+      break;
+    }
+  }
+  $roll = $data->roll;
+
+  return [
+    'has_whitespace'   => $hasWhitespace,
+    'roll_not_integer' => !(is_int($roll) || (is_string($roll) && preg_match('/^\s*\d+\s*$/', $roll) === 1)),
+  ];
+}
+
+/**
+ * Structural hints for unparsable JSON: no characters from the input are kept.
+ */
+function jsonFormatHints(string $json): array
+{
+  $trimmed = trim($json);
+  $length = strlen($trimmed);
+
+  return [
+    'starts_with_brace' => str_starts_with($trimmed, '{'),
+    'ends_with_brace'   => str_ends_with($trimmed, '}'),
+    'has_smart_quotes'  => preg_match('/[\x{201C}\x{201D}\x{201E}\x{2018}\x{2019}\x{00AB}\x{00BB}]/u', $json) === 1,
+    'length_bucket'     => $length < 100 ? 'under_100' : ($length < 500 ? '100_499' : ($length < 2000 ? '500_1999' : '2000_plus')),
+  ];
 }
 
 function missingFieldsError(array $missing): string
@@ -115,31 +198,44 @@ function missingFieldsError(array $missing): string
 
 function hasProp(object $obj, string $prop): bool
 {
-  return isset($obj->$prop) && trim((string)$obj->$prop) !== '';
+  // A nested value still counts as present so it is reported as invalid later.
+  return isset($obj->$prop) && (!is_scalar($obj->$prop) || trim((string)$obj->$prop) !== '');
 }
 
-function checkRegularRoll($data, ?string &$detectedType = null): string
+function checkRegularRoll($data, ?string &$detectedType = null, ?array &$analytics = null): string
 {
   $req = ['server_seed', 'secret_salt', 'public_hash', 'client_seed', 'nonce', 'roll'];
   if (!is_object($data)) {
+    recordAnalytics($analytics, 'invalid_input', 'not_object');
     return callout('error', 'Your input is invalid.', 'Copy the full JSON string from the site and paste it here.');
   }
-  $missing = missingRequiredProps($data, $req);
-  if ($missing) {
-    return missingFieldsError($missing);
+  $inputError = validateRequiredFields($data, $req, $analytics);
+  if ($inputError !== null) {
+    return $inputError;
   }
-  if($data->server_seed[0] === '*' || $data->secret_salt[0] === '*') {
+  if(str_starts_with((string)$data->server_seed, '*') || str_starts_with((string)$data->secret_salt, '*')) {
+    recordAnalytics($analytics, 'not_revealed', 'seed_not_revealed');
     return callout('warning', 'Server Seed is not yet revealed.', 'It is impossible to verify this roll right now &mdash; check back after the seed is revealed.');
   }
 
   $originalRoll = (int)$data->roll;
-  $calculatedRoll = generateRoll($data->server_seed, $data->client_seed, $data->nonce);
+  $calculatedRoll = generateRoll($data->server_seed, $data->client_seed, (int)$data->nonce);
 
   $originalPublicHash = $data->public_hash;
   $calculatedPublicHash = calculatePublicHash($data->server_seed, $data->secret_salt);
 
   $rollMatch = $originalRoll === $calculatedRoll;
   $hashMatch = $originalPublicHash === $calculatedPublicHash;
+
+  if ($rollMatch && $hashMatch) {
+    recordAnalytics($analytics, 'verified', 'all_match');
+  } else {
+    $reason = $rollMatch ? 'hash_mismatch' : ($hashMatch ? 'roll_mismatch' : 'roll_and_hash_mismatch');
+    recordAnalytics($analytics, 'mismatch', $reason, mismatchHints($data, $req) + [
+      // True when the hash differs only by letter case, e.g. an uppercased copy.
+      'hash_case_only' => !$hashMatch && strcasecmp((string)$originalPublicHash, $calculatedPublicHash) === 0,
+    ]);
+  }
 
   $banner = ($rollMatch && $hashMatch)
     ? "<div class='summary summary-ok'><span class='summary-icon'>&#10003;</span><div><strong>Verified &mdash; everything checks out.</strong><span>Both the roll and the public hash match.</span></div></div>"
@@ -196,23 +292,31 @@ function checkRegularRoll($data, ?string &$detectedType = null): string
        . $spoiler;
 }
 
-function checkBattleRoll($data, ?string &$detectedType = null): string
+function checkBattleRoll($data, ?string &$detectedType = null, ?array &$analytics = null): string
 {
   $req = ['beacon', 'client_seed', 'nonce', 'roll'];
   if (!is_object($data)) {
+    recordAnalytics($analytics, 'invalid_input', 'not_object');
     return callout('error', 'Your input is invalid.', 'Copy the full JSON string from the site and paste it here.');
   }
-  $missing = missingRequiredProps($data, $req);
-  if ($missing) {
-    return missingFieldsError($missing);
+  $inputError = validateRequiredFields($data, $req, $analytics);
+  if ($inputError !== null) {
+    return $inputError;
   }
-  if($data->beacon[0] === '*') {
+  if(str_starts_with((string)$data->beacon, '*')) {
+    recordAnalytics($analytics, 'not_revealed', 'beacon_not_generated');
     return callout('warning', 'Beacon is not yet generated.', 'It is impossible to verify this roll right now &mdash; check back once the beacon is available.');
   }
 
   $originalRoll = (int)$data->roll;
-  $calculatedRoll = generateRoll($data->beacon, $data->client_seed, $data->nonce);
+  $calculatedRoll = generateRoll($data->beacon, $data->client_seed, (int)$data->nonce);
   $rollMatch = $originalRoll === $calculatedRoll;
+
+  if ($rollMatch) {
+    recordAnalytics($analytics, 'verified', 'all_match');
+  } else {
+    recordAnalytics($analytics, 'mismatch', 'roll_mismatch', mismatchHints($data, $req));
+  }
 
   $banner = $rollMatch
     ? "<div class='summary summary-ok'><span class='summary-icon'>&#10003;</span><div><strong>Verified &mdash; the roll checks out.</strong><span>The recalculated roll matches the one from the battle.</span></div></div>"
@@ -316,12 +420,14 @@ function detectRollType(object $input): ?string
 
 function verifyRollData(string $json, ?string &$detectedType = null, ?array &$analytics = null): string
 {
-  $analytics = ['roll_type' => 'unknown', 'outcome' => 'invalid_input'];
+  $analytics = ['roll_type' => 'unknown'];
   $input = json_decode($json);
   if ($input === null) {
+    recordAnalytics($analytics, 'invalid_input', 'invalid_json', jsonFormatHints($json));
     return callout('error', 'That is not valid JSON.', 'Make sure you copied the entire block, including the curly braces { }.');
   }
   if (!is_object($input)) {
+    recordAnalytics($analytics, 'invalid_input', 'not_object');
     return callout('error', 'Your input is invalid.', 'Copy the full JSON string from the site and paste it here.');
   }
 
@@ -331,23 +437,26 @@ function verifyRollData(string $json, ?string &$detectedType = null, ?array &$an
 
   if ($type === 'regular' || $type === 'battle') {
     $analytics['roll_type'] = $type;
-    $result = $type === 'regular'
-      ? checkRegularRoll($input, $detectedType)
-      : checkBattleRoll($input, $detectedType);
-    // Only fixed categories are exposed to analytics, never submitted values.
-    $analytics['outcome'] = str_contains($result, 'summary-ok') ? 'verified'
-      : (str_contains($result, 'summary-fail') ? 'mismatch'
-      : (str_contains($result, 'callout-warning') ? 'not_revealed' : 'invalid_input'));
-    return $result;
+    return $type === 'regular'
+      ? checkRegularRoll($input, $detectedType, $analytics)
+      : checkBattleRoll($input, $detectedType, $analytics);
   }
+  // Only reachable when both seed fields or neither are present.
+  recordAnalytics($analytics, 'invalid_input', hasProp($input, 'server_seed') ? 'ambiguous_fields' : 'unknown_type');
   return callout('error', 'Unknown roll type supplied.', 'The "type" field must be either "regular" or "battle".');
 }
 
 $message = '';
 $detectedType = '';
 $verificationAnalytics = null;
-if (!empty($_POST['roll_data'])) {
-  $message = verifyRollData($_POST['roll_data'], $detectedType, $verificationAnalytics);
+$submittedRollData = $_POST['roll_data'] ?? null;
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && $submittedRollData !== null) {
+  if (!is_string($submittedRollData) || $submittedRollData === '') {
+    // Empty submissions still show no result; analytics records the reason.
+    $verificationAnalytics = ['roll_type' => 'unknown', 'outcome' => 'invalid_input', 'reason' => 'empty_input'];
+  } else {
+    $message = verifyRollData($submittedRollData, $detectedType, $verificationAnalytics);
+  }
 }
 
 // Derive the logo's base domain from the current request host by stripping the
@@ -394,7 +503,7 @@ if($baseDomain !== 'skin.club' && !headers_sent()) {
   <link rel="preload" href="assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body<?= $verificationAnalytics !== null ? ' data-verification-event="' . htmlspecialchars(json_encode($verificationAnalytics), ENT_QUOTES, 'UTF-8') . '"' : '' ?>>
   <div class="wrap">
 
     <header class="site-header">
@@ -408,7 +517,7 @@ if($baseDomain !== 'skin.club' && !headers_sent()) {
     </header>
 
     <?php if ($message): ?>
-    <section class="card results" id="results" data-verification-event="<?= htmlspecialchars(json_encode($verificationAnalytics), ENT_QUOTES, 'UTF-8') ?>">
+    <section class="card results" id="results">
       <div class="result-header">
         <h2>Verification result</h2>
         <?php if ($detectedType): ?><?= $detectedType ?><?php endif; ?>

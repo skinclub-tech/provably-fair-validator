@@ -17,6 +17,11 @@ Users paste the JSON roll data from skin.club's "Check Roll" page and the app re
 - **Deployment:** Autoscale, port 8080 mapped to external 80.
 - **GitHub repo:** https://github.com/skinclub-tech/provably-fair-validator (public).
 
+## Analytics
+- Custom events: `sample_selected`, `verification_submitted`, `verification_completed`; the last carries `roll_type`, `outcome` and a fixed `reason` code plus formatting hints.
+- Never send pasted JSON values (seeds, salts, hashes, rolls) to analytics — only fixed codes, booleans and schema field names.
+- The analytics script is injected asynchronously, so page-load events are queued in `assets/app.js` until it is ready.
+
 ## Environment
 - PHP 8.4 is installed as a Replit (Nix) module so it is available in both the development shell and the production deployment container.
 - Deployment target: autoscale.
